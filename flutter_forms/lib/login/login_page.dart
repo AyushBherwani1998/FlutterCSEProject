@@ -6,9 +6,19 @@ import './bubble_indication_painter.dart';
 import 'package:flutter_forms/firebase_services/firebase_auth.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 import 'forgot_password.dart';
+import 'package:flutter_forms/database/user_model.dart';
+import 'package:flutter_forms/database/database.dart';
+import 'dart:io';
+import 'package:flutter_forms/user_interface/home_page.dart';
+
 
 class LoginPage extends StatefulWidget {
-  LoginPage({this.auth, this.onSignedIn,Key key,}) : super(key: key);
+
+  LoginPage({
+    this.auth,
+    this.onSignedIn,
+    Key key,
+  }) : super(key: key);
   final FireBaseAuth auth;
   final VoidCallback onSignedIn;
 
@@ -18,7 +28,6 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage>
     with SingleTickerProviderStateMixin {
-
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
   String _errorMessage;
@@ -34,7 +43,8 @@ class _LoginPageState extends State<LoginPage>
   TextEditingController loginPasswordController = new TextEditingController();
   TextEditingController signupEmailController = new TextEditingController();
   TextEditingController signupPasswordController = new TextEditingController();
-  TextEditingController signupPasswordVerifyController = new TextEditingController();
+  TextEditingController signupPasswordVerifyController =
+      new TextEditingController();
 
   bool _obscureTextLogin = true;
   bool _obscureTextPassword = true;
@@ -310,13 +320,11 @@ class _LoginPageState extends State<LoginPage>
                             fontFamily: "WorkSansBold"),
                       ),
                     ),
-                    onPressed: (){
+                    onPressed: () {
                       showInSnackBar("Login button pressed");
                       LogingInUser();
                     }),
               ),
-
-
             ],
           ),
           Padding(
@@ -534,7 +542,6 @@ class _LoginPageState extends State<LoginPage>
                   ),
                 ),
               ),
-
               Container(
                 margin: EdgeInsets.only(top: 250.0),
                 decoration: new BoxDecoration(
@@ -563,7 +570,7 @@ class _LoginPageState extends State<LoginPage>
                             fontFamily: "WorkSansBold"),
                       ),
                     ),
-                    onPressed: (){
+                    onPressed: () {
                       showInSnackBar("Register button pressed");
                       registerUser();
                     }),
@@ -573,9 +580,7 @@ class _LoginPageState extends State<LoginPage>
           Padding(
             padding: EdgeInsets.only(top: 10.0),
             child: FlatButton(
-                onPressed: () {
-
-                },
+                onPressed: () {},
                 child: Text(
                   "Forgot Password?",
                   style: TextStyle(
@@ -611,71 +616,106 @@ class _LoginPageState extends State<LoginPage>
       _obscureTextPassword = !_obscureTextPassword;
     });
   }
+
   void _toggleSignupVerify() {
     setState(() {
       _obscureTextVerifyPassword = !_obscureTextVerifyPassword;
     });
   }
 
-  void LogingInUser()async{
+  void LogingInUser() async {
     setState(() {
       _errorMessage = "";
       _isLoading = true;
     });
 
-    try{
-      String  userId="";
-      userId = await widget.auth.signIn(loginEmailController.text.toString(), loginPasswordController.text.toString());
-      print("Signed in: $userId");
-      setState(() {
-        _isLoading = false;
-      });
+    try {
+      final result = await InternetAddress.lookup('google.com');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        print('connected');
+        try {
+          String userId = "";
+          userId = await widget.auth.signIn(loginEmailController.text.toString(),
+              loginPasswordController.text.toString());
+          print("Signed in: $userId");
+          setState(() {
+            _isLoading = false;
+          });
 
-      if (userId.length > 0 && userId != null) {
-        widget.onSignedIn();
+          if (userId.length > 0 && userId != null) {
+            widget.onSignedIn();
+          }
+        } catch (e) {
+          print("Error : $e");
+          setState(() {
+            _isLoading = false;
+            _errorMessage = e.message;
+            showInSnackBar(_errorMessage);
+          });
+        }
       }
-    }catch(e){
-      print("Error : $e");
+    } on SocketException catch (_) {
+      print('not connected');
+      var noteDataBase = UserDataBase();
+      String userId = await noteDataBase.getUser(loginEmailController.text.toString(), loginPasswordController.text.toString());
+      print(userId);
       setState(() {
         _isLoading = false;
-        _errorMessage = e.message;
-        showInSnackBar(_errorMessage);
       });
+      if (userId.length > 0 && userId != null) {
+        print("True");
+        Navigator.push(context, MaterialPageRoute(builder: (context)=>Home(userId: userId,auth: new Auth())));
+      }
     }
   }
 
-  Widget _showProgressBar(){
-    if(_isLoading){
-      return Container( width: 300.0,height: 190.0,
-          child: Opacity(opacity: 0.5,child: JumpingDotsProgressIndicator(fontSize: 50.0,),));
-    }return Container(height: 0.0,width: 0.0,);
+  Widget _showProgressBar() {
+    if (_isLoading) {
+      return Container(
+          width: 300.0,
+          height: 190.0,
+          child: Opacity(
+            opacity: 0.5,
+            child: JumpingDotsProgressIndicator(
+              fontSize: 50.0,
+            ),
+          ));
+    }
+    return Container(
+      height: 0.0,
+      width: 0.0,
+    );
   }
 
-  void registerUser()async{
+  void registerUser() async {
     setState(() {
       _errorMessage = "";
       _isLoading = true;
     });
-    try{
-      if(signupPasswordController.text.toString() == signupPasswordVerifyController.text.toString()){
-        String  userId="";
-        userId = await widget.auth.signUp(signupEmailController.text.toString(), signupPasswordController.text.toString());
+    try {
+      if (signupPasswordController.text.toString() ==
+          signupPasswordVerifyController.text.toString()) {
+        String userId = "";
+        userId = await widget.auth.signUp(signupEmailController.text.toString(),
+            signupPasswordController.text.toString());
         print("Signed up: $userId");
+        saveUser(userId, signupEmailController.text.toString(),
+            signupPasswordController.text.toString());
         setState(() {
           _isLoading = false;
         });
         if (userId.length > 0 && userId != null) {
+          print("True");
           widget.onSignedIn();
         }
-      }else{
+      } else {
         setState(() {
           _errorMessage = "Password didn't match";
           signupPasswordVerifyController.clear();
           showInSnackBar(_errorMessage);
         });
       }
-
-    }catch(e){
+    } catch (e) {
       print("Error : $e");
       setState(() {
         _isLoading = false;
@@ -683,5 +723,12 @@ class _LoginPageState extends State<LoginPage>
         showInSnackBar(_errorMessage);
       });
     }
+  }
+
+  void saveUser(String uid, String email, String password) async {
+    var user = User(uid: uid, email: email, password: password);
+    var noteDataBase = UserDataBase();
+    noteDataBase.saveUser(user);
+    print("Note Saved");
   }
 }
