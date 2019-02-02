@@ -26,6 +26,7 @@ dependencies:
   progress_indicators: ^0.1.2
   sqflite: any
   path_provider: '>=0.3.0'
+  datetime_picker_formfield: ^0.1.8
 
 dev_dependencies:
   flutter_test:
