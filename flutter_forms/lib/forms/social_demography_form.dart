@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_forms/firebase_services/firebase_auth.dart';
+
 class SocialDemoForm extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
@@ -24,6 +27,30 @@ class FormPage extends StatefulWidget{
 }
 
 class MyFormPage extends State<FormPage>{
+
+  static Firestore db = Firestore.instance;
+
+  void _submit(String name,int pod,int age,int marraigeAge,int ageAtFirstP,int noOfP)async{
+
+      var dataMap = new Map<String, dynamic>();
+      dataMap['uid'] = Auth().getCurrentUser().toString();
+      dataMap['Name'] = name;
+      dataMap['Age'] = marraigeAge;
+      dataMap["MarriageAge"] = marraigeAge;
+      dataMap['Age at First Pre'] = ageAtFirstP;
+      dataMap['No Of Preg'] = noOfP;
+      db.collection("social_demo_forms").document().setData(dataMap);
+      Scaffold.of(context).showSnackBar(SnackBar(content: Text("Submitted!")));
+      Navigator.pop(context);
+  }
+
+  TextEditingController nameController = new TextEditingController();
+  TextEditingController opdController = new TextEditingController();
+  TextEditingController ageController = new TextEditingController();
+  TextEditingController marraigeAgeController = new TextEditingController();
+  TextEditingController ageAtFirstPController = new TextEditingController();
+  TextEditingController noOfPController = new TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -35,7 +62,7 @@ class MyFormPage extends State<FormPage>{
         children: <Widget>[
           SizedBox(height: 8.0,),
           TextField(
-            controller: null,
+            controller: nameController,
             decoration: InputDecoration(
               enabledBorder: const OutlineInputBorder(
                 borderSide: const BorderSide(color: Colors.black87, width: 0.0),
@@ -54,7 +81,7 @@ class MyFormPage extends State<FormPage>{
             height: 16.0,
           ),
           TextField(
-            controller: null,
+            controller: opdController,
             decoration: InputDecoration(
               enabledBorder: const OutlineInputBorder(
                 borderSide: const BorderSide(color: Colors.black87, width: 0.0),
@@ -198,7 +225,7 @@ class MyFormPage extends State<FormPage>{
             height: 16.0,
           ),
           TextField(
-            controller: null,
+            controller: ageController,
             decoration: InputDecoration(
               enabledBorder: const OutlineInputBorder(
                 borderSide: const BorderSide(color: Colors.black87, width: 0.0),
@@ -217,7 +244,7 @@ class MyFormPage extends State<FormPage>{
             height: 16.0,
           ),
           TextField(
-            controller: null,
+            controller: marraigeAgeController,
             decoration: InputDecoration(
               enabledBorder: const OutlineInputBorder(
                 borderSide: const BorderSide(color: Colors.black87, width: 0.0),
@@ -236,7 +263,7 @@ class MyFormPage extends State<FormPage>{
             height: 16.0,
           ),
           TextField(
-            controller: null,
+            controller: ageAtFirstPController,
             decoration: InputDecoration(
               enabledBorder: const OutlineInputBorder(
                 borderSide: const BorderSide(color: Colors.black87, width: 0.0),
@@ -255,7 +282,7 @@ class MyFormPage extends State<FormPage>{
             height: 16.0,
           ),
           TextField(
-            controller: null,
+            controller: noOfPController,
             decoration: InputDecoration(
               enabledBorder: const OutlineInputBorder(
                 borderSide: const BorderSide(color: Colors.black87, width: 0.0),
@@ -270,8 +297,29 @@ class MyFormPage extends State<FormPage>{
               TextStyle(color: Colors.black, fontFamily: 'Oswald'),
             ),
           ),
+          SizedBox(
+            height: 16.0,
+          ),
+          MaterialButton(
+            color: Colors.blue,
+            child: Text("Submit"),
+            onPressed: () {
+              submit();
+              print("submit button pressed");
+            },
+
+          )
         ],
       ),
     );
+  }
+
+  void submit() {
+    if(nameController.text.toString()==""||opdController.text.toString()==""||ageController.text.toString()==""
+    ||marraigeAgeController.text.toString()==""||ageAtFirstPController.text.toString()==""||noOfPController.text.toString()==""){ 
+        Scaffold.of(context).showSnackBar(SnackBar(content: Text("Fill all the fields! Some Field are emty")));
+    }else{
+      _submit(nameController.text.toString(),int.tryParse(opdController.text),int.tryParse(ageController.text.toString()),int.tryParse(marraigeAgeController.text.toString()),int.tryParse(ageAtFirstPController.text.toString()),int.tryParse(noOfPController.text.toString()));
+    }
   }
 }

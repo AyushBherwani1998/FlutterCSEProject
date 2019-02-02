@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_forms/firebase_services/firebase_auth.dart';
 import 'package:flutter_forms/forms/social_demography_form.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'dart:async';
+
 
 class Home extends StatefulWidget {
   Home({this.userId, this.auth, this.onSignedOut});
