@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_forms/firebase_services/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:intl/intl.dart';
 
@@ -32,16 +33,27 @@ class FormPage extends StatefulWidget {
 class MyFormPage extends State<FormPage> {
   static Firestore db = Firestore.instance;
 
-  void _submit(String name, int pod, int age, int marraigeAge, int ageAtFirstP,
-      int noOfP) async {
+  void _submit({String name, int age, int marriageAge, int ageAtFirstP, int noOfP,int opd,int noOfFam,int noOfLiveBirth,int para}) async {
     var dataMap = new Map<String, dynamic>();
-    dataMap['uid'] = Auth().getCurrentUser().toString();
+    FirebaseUser user = await FirebaseAuth.instance.currentUser();
+    dataMap['uid'] = user.uid;
     dataMap['Name'] = name;
-    dataMap['Age'] = marraigeAge;
-    dataMap["MarriageAge"] = marraigeAge;
-    dataMap['Age at First Pre'] = ageAtFirstP;
-    dataMap['No Of Preg'] = noOfP;
-    db.collection("social_demo_forms").document().setData(dataMap);
+    dataMap['OPD'] = opd;
+    dataMap['Age'] = age;
+    dataMap["MarriageAge"] = marriageAge;
+    dataMap['Para'] = para;
+    dataMap['Age At First Pregnancy'] = ageAtFirstP;
+    dataMap['No Of Pregnancies'] = noOfP;
+    dataMap['Annual Family Income'] = annualIncome;
+    dataMap['No Of Families together'] = noOfFam;
+    dataMap['No of Live Births'] = noOfLiveBirth;
+    dataMap['Birth Interval'] = birthInterval;
+    dataMap['Social-Economic Status'] = socialStatus;
+    dataMap['Religion'] = religion;
+    dataMap['Caste'] = caste;
+    dataMap['Residential Locality'] = residentialLocality;
+    dataMap["Date"]=date;
+    db.collection("social_demo_forms").document("user.uid_Response").setData(dataMap);
     Scaffold.of(context).showSnackBar(SnackBar(content: Text("Submitted!")));
     Navigator.pop(context);
   }
@@ -51,7 +63,7 @@ class MyFormPage extends State<FormPage> {
   };
 
   InputType inputType = InputType.date;
-  DateTime date;
+  DateTime date=null;
 
   TextEditingController nameController = new TextEditingController();
   TextEditingController opdController = new TextEditingController();
@@ -85,6 +97,12 @@ class MyFormPage extends State<FormPage> {
   @override
   void initState() {
     super.initState();
+    residentialLocality = null;
+    caste = null;
+    religion = null;
+    birthInterval = null;
+    annualIncome = null;
+    socialStatus = null;
     residentialList = dropListRes.map((val)=> new DropdownMenuItem(child: new Text(val),value: val,)).toList();
     casteList = dropListCaste.map((val)=> new DropdownMenuItem(child: new Text(val),value: val,)).toList();
     religionList = dropListReligion.map((val)=> new DropdownMenuItem(child: new Text(val),value: val,)).toList();
@@ -122,7 +140,7 @@ class MyFormPage extends State<FormPage> {
           ),
           TextField(
             keyboardType: TextInputType.numberWithOptions(),
-            controller: nameController,
+            controller: opdController,
             decoration: InputDecoration(
               enabledBorder: const OutlineInputBorder(
                 borderSide: const BorderSide(color: Colors.black87, width: 0.0),
@@ -286,6 +304,7 @@ class MyFormPage extends State<FormPage> {
             height: 16.0,
           ),
           TextField(
+            keyboardType: TextInputType.numberWithOptions(),
             controller: noOfFamilies,
             decoration: InputDecoration(
               enabledBorder: const OutlineInputBorder(
@@ -335,6 +354,7 @@ class MyFormPage extends State<FormPage> {
             height: 16.0,
           ),
           TextField(
+            keyboardType: TextInputType.numberWithOptions(),
             controller: ageController,
             decoration: InputDecoration(
               enabledBorder: const OutlineInputBorder(
@@ -351,6 +371,7 @@ class MyFormPage extends State<FormPage> {
             height: 16.0,
           ),
           TextField(
+            keyboardType: TextInputType.numberWithOptions(),
             controller: marraigeAgeController,
             decoration: InputDecoration(
               enabledBorder: const OutlineInputBorder(
@@ -367,6 +388,7 @@ class MyFormPage extends State<FormPage> {
             height: 16.0,
           ),
           TextField(
+            keyboardType: TextInputType.numberWithOptions(),
             controller: ageAtFirstPController,
             decoration: InputDecoration(
               enabledBorder: const OutlineInputBorder(
@@ -383,6 +405,7 @@ class MyFormPage extends State<FormPage> {
             height: 16.0,
           ),
           TextField(
+            keyboardType: TextInputType.numberWithOptions(),
             controller: noOfPController,
             decoration: InputDecoration(
               enabledBorder: const OutlineInputBorder(
@@ -399,6 +422,7 @@ class MyFormPage extends State<FormPage> {
             height: 16.0,
           ),
           TextField(
+            keyboardType: TextInputType.numberWithOptions(),
             controller: paraController,
             decoration: InputDecoration(
               enabledBorder: const OutlineInputBorder(
@@ -415,7 +439,8 @@ class MyFormPage extends State<FormPage> {
             height: 16.0,
           ),
           TextField(
-            controller: paraController,
+            controller: liveBirthController,
+              keyboardType: TextInputType.numberWithOptions(),
             decoration: InputDecoration(
               enabledBorder: const OutlineInputBorder(
                 borderSide: const BorderSide(color: Colors.black87, width: 0.0),
@@ -458,6 +483,21 @@ class MyFormPage extends State<FormPage> {
                     })
             ),
           ),
+          SizedBox(
+            height: 16.0,
+          ),
+
+            Container(
+              margin: EdgeInsets.fromLTRB(50, 0.0, 50, 0.0),
+              child: MaterialButton(
+                onPressed: submit,
+                color: Colors.blue,
+                child: Container(
+                    padding:EdgeInsets.all(12.0),
+                    child:Text("Submit",style: TextStyle(color:Colors.white),)
+                ),
+              ),
+            ),
         ],
       ),
     );
@@ -469,17 +509,30 @@ class MyFormPage extends State<FormPage> {
         ageController.text.toString() == "" ||
         marraigeAgeController.text.toString() == "" ||
         ageAtFirstPController.text.toString() == "" ||
-        noOfPController.text.toString() == "") {
+        noOfPController.text.toString() == "" ||
+        paraController.text.toString() == "" ||
+        noOfFamilies.text.toString() == "" ||
+        liveBirthController.text.toString() == "" ||
+        date == null || caste == null || religion == null ||
+        socialStatus == null || annualIncome == null || birthInterval == null ||
+        residentialLocality == null
+    ) {
       Scaffold.of(context).showSnackBar(
           SnackBar(content: Text("Fill all the fields! Some Field are emty")));
     } else {
       _submit(
-          nameController.text.toString(),
-          int.tryParse(opdController.text),
-          int.tryParse(ageController.text.toString()),
-          int.tryParse(marraigeAgeController.text.toString()),
-          int.tryParse(ageAtFirstPController.text.toString()),
-          int.tryParse(noOfPController.text.toString()));
+          name:nameController.text.toString(),
+          age:int.tryParse(ageController.text.toString()),
+          marriageAge:int.tryParse(marraigeAgeController.text.toString()),
+          noOfFam: int.tryParse(noOfFamilies.text.toString()),
+          noOfLiveBirth: int.tryParse(liveBirthController.text.toString()),
+          ageAtFirstP: int.tryParse(ageAtFirstPController.text.toString()),
+          opd: int.tryParse(opdController.text.toString()),
+          noOfP: int.tryParse(noOfPController.text.toString()),
+          para: int.tryParse(paraController.text.toString())
+
+      );
+
     }
   }
 }
