@@ -53,7 +53,19 @@ class MyFormPage extends State<FormPage> {
     dataMap['Caste'] = caste;
     dataMap['Residential Locality'] = residentialLocality;
     dataMap["Date"]=date;
-    db.collection("social_demo_forms").document("user.uid_Response").setData(dataMap);
+    final collRef = Firestore.instance.collection('social_demo_forms');
+    final userRef = Firestore.instance.collection('user');
+    DocumentReference docReference = collRef.document();
+
+    docReference.setData(dataMap).then((doc) {
+      print('hop ${docReference.documentID}');
+
+      userRef.document("${user.uid}").updateData({"social_demo_form_id":docReference.documentID});
+    }).catchError((error) {
+      print(error);
+    });
+
+//    DocumentReference reference = await db.collection("social_demo_forms").add(dataMap);
     Scaffold.of(context).showSnackBar(SnackBar(content: Text("Submitted!")));
     Navigator.pop(context);
   }
@@ -63,7 +75,7 @@ class MyFormPage extends State<FormPage> {
   };
 
   InputType inputType = InputType.date;
-  DateTime date=null;
+  DateTime date;
 
   TextEditingController nameController = new TextEditingController();
   TextEditingController opdController = new TextEditingController();
@@ -100,6 +112,7 @@ class MyFormPage extends State<FormPage> {
     residentialLocality = null;
     caste = null;
     religion = null;
+    date=null;
     birthInterval = null;
     annualIncome = null;
     socialStatus = null;
@@ -517,6 +530,8 @@ class MyFormPage extends State<FormPage> {
         socialStatus == null || annualIncome == null || birthInterval == null ||
         residentialLocality == null
     ) {
+      String id = db.collection("social_demo_forms").document("user.uid_Response").documentID;
+      print(id);
       Scaffold.of(context).showSnackBar(
           SnackBar(content: Text("Fill all the fields! Some Field are emty")));
     } else {
