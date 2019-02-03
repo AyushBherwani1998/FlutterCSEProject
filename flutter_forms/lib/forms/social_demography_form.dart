@@ -55,10 +55,43 @@ class MyFormPage extends State<FormPage> {
 
   TextEditingController nameController = new TextEditingController();
   TextEditingController opdController = new TextEditingController();
+  TextEditingController noOfFamilies = new TextEditingController();
   TextEditingController ageController = new TextEditingController();
   TextEditingController marraigeAgeController = new TextEditingController();
   TextEditingController ageAtFirstPController = new TextEditingController();
   TextEditingController noOfPController = new TextEditingController();
+  TextEditingController paraController = new TextEditingController();
+  TextEditingController liveBirthController = TextEditingController();
+  String residentialLocality;
+  List<DropdownMenuItem<String>> residentialList = [];
+  List<String> dropListRes = ["Urban","Rural","Tribal"];
+  String caste;
+  List<DropdownMenuItem<String>> casteList = [];
+  List<String> dropListCaste = ["General","SC(Schedule Caste)","ST(Schedule Tribe)","OBC"];
+  String religion;
+  List<DropdownMenuItem<String>> religionList = [];
+  List<String> dropListReligion = ["Hindu","Jain","Sikh","Buddhism","Parsi","Muslim","Christian","Other"];
+  String socialStatus;
+  List<DropdownMenuItem<String>> socialSList = [];
+  List<String> dropListsocialStatus = ["Antyoday (Poorest of Poor)","BPL (Below Poverty Line)","APL (Above Poverty Line)","Don't Know"];
+  String annualIncome;
+  List<DropdownMenuItem<String>> annualIncomeList = [];
+  List<String> dropListannualIncome = ["Less than Rs. 1.2 lakh","Rs. 1.2 lakh to Rs. 2.5 lakh","Rs. 2.5 lakh to Rs. 5 lakh","More than Rs. 5 lakh"];
+  String birthInterval;
+  List<DropdownMenuItem<String>> birthIntervalList = [];
+  List<String> dropListBirthInterval = ["none","less than 12 months","12-24 months","more than 24 months"];
+
+
+  @override
+  void initState() {
+    super.initState();
+    residentialList = dropListRes.map((val)=> new DropdownMenuItem(child: new Text(val),value: val,)).toList();
+    casteList = dropListCaste.map((val)=> new DropdownMenuItem(child: new Text(val),value: val,)).toList();
+    religionList = dropListReligion.map((val)=> new DropdownMenuItem(child: new Text(val),value: val,)).toList();
+    socialSList = dropListsocialStatus.map((val)=> new DropdownMenuItem(child: new Text(val),value: val,)).toList();
+    annualIncomeList = dropListannualIncome.map((val)=> new DropdownMenuItem(child: new Text(val),value: val,)).toList();
+    birthIntervalList = dropListBirthInterval.map((val)=> new DropdownMenuItem(child: new Text(val),value: val,)).toList();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -125,57 +158,38 @@ class MyFormPage extends State<FormPage> {
           Container(
             margin: EdgeInsets.all(8.0),
             child: Text(
-              "Residential Locality: ",
+              "Residential Locality ",
               style: TextStyle(color: Colors.black87, fontSize: 14.0),
             ),
           ),
           Container(
-              padding: EdgeInsets.fromLTRB(8.0, 0.0, 0.0, 0.0),
+              padding: EdgeInsets.fromLTRB(8.0, 0.0, 8.0, 0.0),
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.all(Radius.circular(4.0)),
                   border: Border.all(
                     color: Colors.grey,
                   )),
-              child: Row(
-                children: <Widget>[
-                  new Radio(
-                    value: 0,
-                    groupValue: null,
-                    onChanged: null,
-                  ),
-                  new Text(
-                    'Urban',
-                    style: new TextStyle(fontSize: 14.0),
-                  ),
-                  new Radio(
-                    value: 1,
-                    groupValue: null,
-                    onChanged: null,
-                  ),
-                  new Text(
-                    'Rural',
-                    style: new TextStyle(
-                      fontSize: 14.0,
-                    ),
-                  ),
-                  new Radio(
-                    value: 2,
-                    groupValue: null,
-                    onChanged: null,
-                  ),
-                  new Text(
-                    'Tribal',
-                    style: new TextStyle(fontSize: 14.0),
-                  ),
-                ],
-              )),
+            child: DropdownButtonHideUnderline(
+                child: DropdownButton(
+                  hint: Text("Select Residential Locality"),
+                    items: residentialList,
+                    value: residentialLocality,
+                    iconSize: 30.0,
+                    elevation: 8,
+                    onChanged: (value){
+                      setState(() {
+                        residentialLocality = value;
+                      });
+                    })
+            ),
+          ),
           SizedBox(
             height: 16.0,
           ),
           Container(
             margin: EdgeInsets.all(8.0),
             child: Text(
-              "Caste: ",
+              "Caste",
               style: TextStyle(color: Colors.black87, fontSize: 14.0),
             ),
           ),
@@ -188,63 +202,27 @@ class MyFormPage extends State<FormPage> {
                   border: Border.all(
                     color: Colors.grey,
                   )),
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                shrinkWrap: true,
-                children: <Widget>[
-                  new Radio(
-                    value: 0,
-                    groupValue: null,
-                    onChanged: null,
-                  ),
-                  Center(
-                    child: new Text(
-                      'General',
-                      style: new TextStyle(fontSize: 14.0),
-                    ),
-                  ),
-                  new Radio(
-                    value: 1,
-                    groupValue: null,
-                    onChanged: null,
-                  ),
-                  Center(
-                    child: new Text(
-                      'SC(Schedule Caste)',
-                      style: new TextStyle(fontSize: 14.0),
-                    ),
-                  ),
-                  new Radio(
-                    value: 2,
-                    groupValue: null,
-                    onChanged: null,
-                  ),
-                  Center(
-                    child: new Text(
-                      'ST(Schedule Tribe)',
-                      style: new TextStyle(fontSize: 14.0),
-                    ),
-                  ),
-                  new Radio(
-                    value: 2,
-                    groupValue: null,
-                    onChanged: null,
-                  ),
-                  Center(
-                    child: new Text(
-                      'OBC',
-                      style: new TextStyle(fontSize: 14.0),
-                    ),
-                  ),
-                ],
-              )),
+            child: DropdownButtonHideUnderline(
+                child: DropdownButton(
+                    hint: Text("Select Caste"),
+                    items: casteList,
+                    value: caste,
+                    iconSize: 30.0,
+                    elevation: 8,
+                    onChanged: (value){
+                      setState(() {
+                        caste = value;
+                      });
+                    })
+            ),
+          ),
           SizedBox(
             height: 16.0,
           ),
           Container(
             margin: EdgeInsets.all(8.0),
             child: Text(
-              "Socio-Economic Status: ",
+              "Religion",
               style: TextStyle(color: Colors.black87, fontSize: 14.0),
             ),
           ),
@@ -257,61 +235,58 @@ class MyFormPage extends State<FormPage> {
                   border: Border.all(
                     color: Colors.grey,
                   )),
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                shrinkWrap: true,
-                children: <Widget>[
-                  new Radio(
-                    value: 0,
-                    groupValue: null,
-                    onChanged: null,
-                  ),
-                  Center(
-                    child: new Text(
-                      'Antyoday (Poorest of Poor)',
-                      style: new TextStyle(fontSize: 14.0),
-                    ),
-                  ),
-                  new Radio(
-                    value: 1,
-                    groupValue: null,
-                    onChanged: null,
-                  ),
-                  Center(
-                    child: new Text(
-                      'BPL (Below Poverty Line)',
-                      style: new TextStyle(fontSize: 14.0),
-                    ),
-                  ),
-                  new Radio(
-                    value: 2,
-                    groupValue: null,
-                    onChanged: null,
-                  ),
-                  Center(
-                    child: new Text(
-                      'APL (Above Poverty Line)',
-                      style: new TextStyle(fontSize: 14.0),
-                    ),
-                  ),
-                  new Radio(
-                    value: 2,
-                    groupValue: null,
-                    onChanged: null,
-                  ),
-                  Center(
-                    child: new Text(
-                      'Don’t know',
-                      style: new TextStyle(fontSize: 14.0),
-                    ),
-                  ),
-                ],
-              )),
+              child: DropdownButtonHideUnderline(
+                  child: DropdownButton(
+                      hint: Text("Select Religion"),
+                      items: religionList,
+                      value: religion,
+                      iconSize: 30.0,
+                      elevation: 8,
+                      onChanged: (value){
+                        setState(() {
+                          religion = value;
+                        });
+                      })
+              ),
+          ),
+          SizedBox(
+            height: 16.0,
+          ),
+          Container(
+            margin: EdgeInsets.all(8.0),
+            child: Text(
+              "Social-Economic Status",
+              style: TextStyle(color: Colors.black87, fontSize: 14.0),
+            ),
+          ),
+          Container(
+            height: 55.0,
+            width: MediaQuery.of(context).size.width,
+            padding: EdgeInsets.fromLTRB(8.0, 0.0, 8.0, 0.0),
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.all(Radius.circular(4.0)),
+                border: Border.all(
+                  color: Colors.grey,
+                )),
+            child: DropdownButtonHideUnderline(
+                child: DropdownButton(
+                    hint: Text("Select Social-Econmic Status"),
+                    items: socialSList,
+                    value: socialStatus,
+                    iconSize: 30.0,
+                    elevation: 8,
+                    onChanged: (value){
+                      setState(() {
+                        socialStatus = value;
+                      });
+                    })
+            ),
+          ),
           SizedBox(
             height: 16.0,
           ),
           TextField(
-            controller: nameController,
+            controller: noOfFamilies,
             decoration: InputDecoration(
               enabledBorder: const OutlineInputBorder(
                 borderSide: const BorderSide(color: Colors.black87, width: 0.0),
@@ -321,6 +296,166 @@ class MyFormPage extends State<FormPage> {
               ),
               border: OutlineInputBorder(),
               labelText: "Number of families living together",
+            ),
+          ),
+          SizedBox(
+            height: 16.0,
+          ),
+          Container(
+            margin: EdgeInsets.all(8.0),
+            child: Text(
+              "Annual Income",
+              style: TextStyle(color: Colors.black87, fontSize: 14.0),
+            ),
+          ),
+          Container(
+            height: 55.0,
+            width: MediaQuery.of(context).size.width,
+            padding: EdgeInsets.fromLTRB(8.0, 0.0, 8.0, 0.0),
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.all(Radius.circular(4.0)),
+                border: Border.all(
+                  color: Colors.grey,
+                )),
+            child: DropdownButtonHideUnderline(
+                child: DropdownButton(
+                    hint: Text("Select Annual Income"),
+                    items: annualIncomeList,
+                    value: annualIncome,
+                    iconSize: 30.0,
+                    elevation: 8,
+                    onChanged: (value){
+                      setState(() {
+                        annualIncome = value;
+                      });
+                    })
+            ),
+          ),
+          SizedBox(
+            height: 16.0,
+          ),
+          TextField(
+            controller: ageController,
+            decoration: InputDecoration(
+              enabledBorder: const OutlineInputBorder(
+                borderSide: const BorderSide(color: Colors.black87, width: 0.0),
+              ),
+              focusedBorder: const OutlineInputBorder(
+                borderSide: const BorderSide(color: Colors.black87, width: 0.0),
+              ),
+              border: OutlineInputBorder(),
+              labelText: "Age",
+            ),
+          ),
+          SizedBox(
+            height: 16.0,
+          ),
+          TextField(
+            controller: marraigeAgeController,
+            decoration: InputDecoration(
+              enabledBorder: const OutlineInputBorder(
+                borderSide: const BorderSide(color: Colors.black87, width: 0.0),
+              ),
+              focusedBorder: const OutlineInputBorder(
+                borderSide: const BorderSide(color: Colors.black87, width: 0.0),
+              ),
+              border: OutlineInputBorder(),
+              labelText: "Marriage Age",
+            ),
+          ),
+          SizedBox(
+            height: 16.0,
+          ),
+          TextField(
+            controller: ageAtFirstPController,
+            decoration: InputDecoration(
+              enabledBorder: const OutlineInputBorder(
+                borderSide: const BorderSide(color: Colors.black87, width: 0.0),
+              ),
+              focusedBorder: const OutlineInputBorder(
+                borderSide: const BorderSide(color: Colors.black87, width: 0.0),
+              ),
+              border: OutlineInputBorder(),
+              labelText: "Age at first pregnancy",
+            ),
+          ),
+          SizedBox(
+            height: 16.0,
+          ),
+          TextField(
+            controller: noOfPController,
+            decoration: InputDecoration(
+              enabledBorder: const OutlineInputBorder(
+                borderSide: const BorderSide(color: Colors.black87, width: 0.0),
+              ),
+              focusedBorder: const OutlineInputBorder(
+                borderSide: const BorderSide(color: Colors.black87, width: 0.0),
+              ),
+              border: OutlineInputBorder(),
+              labelText: "Gravida(No of Pregnancies)",
+            ),
+          ),
+          SizedBox(
+            height: 16.0,
+          ),
+          TextField(
+            controller: paraController,
+            decoration: InputDecoration(
+              enabledBorder: const OutlineInputBorder(
+                borderSide: const BorderSide(color: Colors.black87, width: 0.0),
+              ),
+              focusedBorder: const OutlineInputBorder(
+                borderSide: const BorderSide(color: Colors.black87, width: 0.0),
+              ),
+              border: OutlineInputBorder(),
+              labelText: "Para (No. of deliveries)",
+            ),
+          ),
+          SizedBox(
+            height: 16.0,
+          ),
+          TextField(
+            controller: paraController,
+            decoration: InputDecoration(
+              enabledBorder: const OutlineInputBorder(
+                borderSide: const BorderSide(color: Colors.black87, width: 0.0),
+              ),
+              focusedBorder: const OutlineInputBorder(
+                borderSide: const BorderSide(color: Colors.black87, width: 0.0),
+              ),
+              border: OutlineInputBorder(),
+              labelText: "No of live births",
+            ),
+          ),
+          SizedBox(
+            height: 16.0,
+          ),
+          Container(
+            margin: EdgeInsets.all(8.0),
+            child: Text(
+              "Birth Interval",
+              style: TextStyle(color: Colors.black87, fontSize: 14.0),
+            ),
+          ),
+          Container(
+            padding: EdgeInsets.fromLTRB(8.0, 0.0, 8.0, 0.0),
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.all(Radius.circular(4.0)),
+                border: Border.all(
+                  color: Colors.grey,
+                )),
+            child: DropdownButtonHideUnderline(
+                child: DropdownButton(
+                    hint: Text("Select birth interval"),
+                    items: birthIntervalList,
+                    value: birthInterval,
+                    iconSize: 30.0,
+                    elevation: 8,
+                    onChanged: (value){
+                      setState(() {
+                        birthInterval = value;
+                      });
+                    })
             ),
           ),
         ],
