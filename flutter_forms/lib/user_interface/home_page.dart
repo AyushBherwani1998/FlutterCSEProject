@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_forms/firebase_services/firebase_auth.dart';
+import 'package:flutter_forms/forms/epds_form.dart';
 import 'package:flutter_forms/forms/social_demography_form.dart';
+
 
 
 class Home extends StatefulWidget {
@@ -86,6 +88,7 @@ class MyHomePage extends State<HomePage>{
       padding: EdgeInsets.all(3.0),
       child: ListView(
         children: <Widget>[
+          SizedBox(height: 8.0,),
           Card(
             elevation: 4.0,
             color: Colors.blueAccent,
@@ -94,10 +97,26 @@ class MyHomePage extends State<HomePage>{
                 Navigator.push(context, MaterialPageRoute(builder: (context)=>SocialDemoForm()));
               },
               contentPadding: EdgeInsets.all(14.0),
-              title: Text("New Social Demography Form",style: TextStyle(color: Colors.white,fontSize: 16.0),),
-               trailing: IconButton(icon: Icon(Icons.add,color: Colors.white,),onPressed: (){print("New Fomr");
+              title: Text("New Patient",style: TextStyle(color: Colors.white,fontSize: 16.0),),
+               trailing: IconButton(icon: Icon(Icons.add,color: Colors.white,),onPressed: (){print("New Form");
                Navigator.push(context, MaterialPageRoute(builder: (context)=>SocialDemoForm()));
                },),
+            ),
+          ),
+          SizedBox(
+            height: 8.0,
+          ),
+          Card(
+            elevation: 4.0,
+            color: Colors.blueAccent,
+            child: ListTile(
+              onTap: (){
+
+              },
+              contentPadding: EdgeInsets.all(14.0),
+              title: Text("Existing Patient",style: TextStyle(color: Colors.white,fontSize: 16.0),),
+              trailing: IconButton(icon: Icon(Icons.add,color: Colors.white,),onPressed: (){print("New Form");
+              },),
             ),
           )
         ],

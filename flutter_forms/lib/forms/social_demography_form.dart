@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
+import 'package:flutter_forms/forms/epds_form.dart';
 import 'package:intl/intl.dart';
 
 class SocialDemoForm extends StatelessWidget {
@@ -33,10 +33,9 @@ class FormPage extends StatefulWidget {
 class MyFormPage extends State<FormPage> {
   static Firestore db = Firestore.instance;
 
-  void _submit({String name, int age, int marriageAge, int ageAtFirstP, int noOfP,int opd,int noOfFam,int noOfLiveBirth,int para}) async {
+  void _submit({String name,String uniqueId, int age, int marriageAge, int ageAtFirstP, int noOfP,int opd,int noOfFam,int noOfLiveBirth,int para}) async {
     var dataMap = new Map<String, dynamic>();
-    FirebaseUser user = await FirebaseAuth.instance.currentUser();
-    dataMap['uid'] = user.uid;
+    dataMap['uid'] = uniqueId;
     dataMap['Name'] = name;
     dataMap['OPD'] = opd;
     dataMap['Age'] = age;
@@ -54,20 +53,20 @@ class MyFormPage extends State<FormPage> {
     dataMap['Residential Locality'] = residentialLocality;
     dataMap["Date"]=date;
     final collRef = Firestore.instance.collection('social_demo_forms');
-    final userRef = Firestore.instance.collection('user');
     DocumentReference docReference = collRef.document();
 
     docReference.setData(dataMap).then((doc) {
       print('hop ${docReference.documentID}');
 
-      userRef.document("${user.uid}").updateData({"social_demo_form_id":docReference.documentID});
+      Firestore.instance.collection('user').document("$uniqueId").setData({"social_demo_form_id":docReference.documentID,"name":name,"age":age,"pbq_count":0,"epds_count":0});
+      Navigator.pushReplacement(context,MaterialPageRoute(builder: (context)=>EPDS(uid: uniqueId.toString())));
     }).catchError((error) {
       print(error);
     });
 
 //    DocumentReference reference = await db.collection("social_demo_forms").add(dataMap);
     Scaffold.of(context).showSnackBar(SnackBar(content: Text("Submitted!")));
-    Navigator.pop(context);
+    Navigator.pushReplacement(context,MaterialPageRoute(builder: (context)=>EPDS(uid: uniqueId.toString())));
   }
 
   final formats = {
@@ -77,6 +76,7 @@ class MyFormPage extends State<FormPage> {
   InputType inputType = InputType.date;
   DateTime date;
 
+  TextEditingController idController = new TextEditingController();
   TextEditingController nameController = new TextEditingController();
   TextEditingController opdController = new TextEditingController();
   TextEditingController noOfFamilies = new TextEditingController();
@@ -132,6 +132,25 @@ class MyFormPage extends State<FormPage> {
         shrinkWrap: true,
         scrollDirection: Axis.vertical,
         children: <Widget>[
+          SizedBox(
+            height: 8.0,
+          ),
+          TextField(
+            controller: idController,
+            decoration: InputDecoration(
+              enabledBorder: const OutlineInputBorder(
+                borderSide: const BorderSide(color: Colors.black87, width: 0.0),
+              ),
+              focusedBorder: const OutlineInputBorder(
+                borderSide: const BorderSide(color: Colors.black87, width: 0.0),
+              ),
+              border: OutlineInputBorder(),
+              labelText: "User Id",
+            ),
+          ),
+          SizedBox(
+            height: 16.0,
+          ),
           SizedBox(
             height: 8.0,
           ),
@@ -518,6 +537,7 @@ class MyFormPage extends State<FormPage> {
 
   void submit() {
     if (nameController.text.toString() == "" ||
+        idController.text.toString() == "" ||
         opdController.text.toString() == "" ||
         ageController.text.toString() == "" ||
         marraigeAgeController.text.toString() == "" ||
@@ -536,6 +556,7 @@ class MyFormPage extends State<FormPage> {
           SnackBar(content: Text("Fill all the fields! Some Field are emty")));
     } else {
       _submit(
+          uniqueId: idController.text.toString(),
           name:nameController.text.toString(),
           age:int.tryParse(ageController.text.toString()),
           marriageAge:int.tryParse(marraigeAgeController.text.toString()),
