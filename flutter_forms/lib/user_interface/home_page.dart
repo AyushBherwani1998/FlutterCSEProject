@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_forms/firebase_services/firebase_auth.dart';
-import 'package:flutter_forms/forms/epds_form.dart';
-import 'package:flutter_forms/forms/social_demography_form.dart';
+import 'package:flutter_forms/user_interface/new_patient.dart';
 
 
 
@@ -61,6 +60,12 @@ class MyHome extends State<Home> {
               },
             ),
             ListTile(
+              title: Text('Recent Entries'),
+              onTap: () {
+                print("Recent Entries");
+              },
+            ),
+            ListTile(
               title: Text('Sign Out'),
               onTap: () {
                 _signOut();
@@ -94,12 +99,13 @@ class MyHomePage extends State<HomePage>{
             color: Colors.blueAccent,
             child: ListTile(
               onTap: (){
-                Navigator.push(context, MaterialPageRoute(builder: (context)=>SocialDemoForm()));
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>NewPatientActivity()));
+                print("New Patient");
               },
               contentPadding: EdgeInsets.all(14.0),
               title: Text("New Patient",style: TextStyle(color: Colors.white,fontSize: 16.0),),
-               trailing: IconButton(icon: Icon(Icons.add,color: Colors.white,),onPressed: (){print("New Form");
-               Navigator.push(context, MaterialPageRoute(builder: (context)=>SocialDemoForm()));
+               trailing: IconButton(icon: Icon(Icons.add,color: Colors.white,),onPressed: (){print("New Patient");
+               Navigator.push(context, MaterialPageRoute(builder: (context)=>NewPatientActivity()));
                },),
             ),
           ),

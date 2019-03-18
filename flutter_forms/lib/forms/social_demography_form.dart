@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -33,8 +35,9 @@ class FormPage extends StatefulWidget {
 class MyFormPage extends State<FormPage> {
   static Firestore db = Firestore.instance;
 
-  void _submit({String name,String uniqueId, int age, int marriageAge, int ageAtFirstP, int noOfP,int opd,int noOfFam,int noOfLiveBirth,int para}) async {
+  void _submit({String name,int age, int marriageAge, int ageAtFirstP, int noOfP,int opd,int noOfFam,int noOfLiveBirth,int para}) async {
     var dataMap = new Map<String, dynamic>();
+    uniqueId = generateName(date, name);
     dataMap['uid'] = uniqueId;
     dataMap['Name'] = name;
     dataMap['OPD'] = opd;
@@ -54,19 +57,25 @@ class MyFormPage extends State<FormPage> {
     dataMap["Date"]=date;
     final collRef = Firestore.instance.collection('social_demo_forms');
     DocumentReference docReference = collRef.document();
-
     docReference.setData(dataMap).then((doc) {
       print('hop ${docReference.documentID}');
 
       Firestore.instance.collection('user').document("$uniqueId").setData({"social_demo_form_id":docReference.documentID,"name":name,"age":age,"pbq_count":0,"epds_count":0});
-      Navigator.pushReplacement(context,MaterialPageRoute(builder: (context)=>EPDS(uid: uniqueId.toString())));
     }).catchError((error) {
       print(error);
     });
-
-//    DocumentReference reference = await db.collection("social_demo_forms").add(dataMap);
-    Scaffold.of(context).showSnackBar(SnackBar(content: Text("Submitted!")));
-    Navigator.pushReplacement(context,MaterialPageRoute(builder: (context)=>EPDS(uid: uniqueId.toString())));
+    showDialog(context: context,
+    builder: (BuildContext context){
+      return AlertDialog(
+        title: Text("Usernmae"),
+        content:Text("Your username is $uniqueId . Please remember the username."),
+        actions: <Widget>[
+          FlatButton(child:Text("Okay"), onPressed: () {
+            Navigator.pushReplacement(context,MaterialPageRoute(builder: (context)=>EPDS(uid: uniqueId.toString())));
+          },)
+        ],
+      );
+    });
   }
 
   final formats = {
@@ -75,8 +84,7 @@ class MyFormPage extends State<FormPage> {
 
   InputType inputType = InputType.date;
   DateTime date;
-
-  TextEditingController idController = new TextEditingController();
+  String uniqueId;
   TextEditingController nameController = new TextEditingController();
   TextEditingController opdController = new TextEditingController();
   TextEditingController noOfFamilies = new TextEditingController();
@@ -132,25 +140,6 @@ class MyFormPage extends State<FormPage> {
         shrinkWrap: true,
         scrollDirection: Axis.vertical,
         children: <Widget>[
-          SizedBox(
-            height: 8.0,
-          ),
-          TextField(
-            controller: idController,
-            decoration: InputDecoration(
-              enabledBorder: const OutlineInputBorder(
-                borderSide: const BorderSide(color: Colors.black87, width: 0.0),
-              ),
-              focusedBorder: const OutlineInputBorder(
-                borderSide: const BorderSide(color: Colors.black87, width: 0.0),
-              ),
-              border: OutlineInputBorder(),
-              labelText: "User Id",
-            ),
-          ),
-          SizedBox(
-            height: 16.0,
-          ),
           SizedBox(
             height: 8.0,
           ),
@@ -537,7 +526,6 @@ class MyFormPage extends State<FormPage> {
 
   void submit() {
     if (nameController.text.toString() == "" ||
-        idController.text.toString() == "" ||
         opdController.text.toString() == "" ||
         ageController.text.toString() == "" ||
         marraigeAgeController.text.toString() == "" ||
@@ -548,15 +536,14 @@ class MyFormPage extends State<FormPage> {
         liveBirthController.text.toString() == "" ||
         date == null || caste == null || religion == null ||
         socialStatus == null || annualIncome == null || birthInterval == null ||
-        residentialLocality == null
+        residentialLocality == null || int.tryParse(ageController.text.toString()) > 60
     ) {
       String id = db.collection("social_demo_forms").document("user.uid_Response").documentID;
       print(id);
       Scaffold.of(context).showSnackBar(
-          SnackBar(content: Text("Fill all the fields! Some Field are emty")));
+          SnackBar(content: Text("Fill all the fields! Some Field are emty OR some field are having data issues")));
     } else {
       _submit(
-          uniqueId: idController.text.toString(),
           name:nameController.text.toString(),
           age:int.tryParse(ageController.text.toString()),
           marriageAge:int.tryParse(marraigeAgeController.text.toString()),
@@ -570,5 +557,10 @@ class MyFormPage extends State<FormPage> {
       );
 
     }
+  }
+  String generateName(DateTime date,String name){
+      var id = date.toString().substring(5,7)+ name+ date.toString().substring(8,11).trim()
+          +Random().nextInt(66).toString().trim();
+      return id;
   }
 }

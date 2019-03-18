@@ -4,6 +4,6 @@ import 'package:flutter_forms/firebase_services/firebase_auth.dart';
 
 void main() => runApp(new MaterialApp(
   debugShowCheckedModeBanner: false,
-  title: "Issue Ticketing System",
+  title: "Forms",
   home: FireBaseAuthClass(auth: new Auth(),),
 ));

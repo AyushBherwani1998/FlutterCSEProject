@@ -99,7 +99,7 @@ class MyPBQPage extends State<PBQFormPage>{
         return 1;
       case "Quite Often":
         return 2;
-      case "Sometime":
+      case "Sometimes":
         return 3;
       case "Rarely":
         return 4;
@@ -115,7 +115,7 @@ class MyPBQPage extends State<PBQFormPage>{
         return 4;
       case "Quite Often":
         return 3;
-      case "Sometime":
+      case "Sometimes":
         return 2;
       case "Rarely":
         return 1;
@@ -1008,6 +1008,7 @@ class MyPBQPage extends State<PBQFormPage>{
                         question24 = value;
                         color24 = Colors.grey;
                         scores[23] = getScoreRev(value);
+                        print(getScoreRev(value));
                       });
                     })
             ),
@@ -1102,6 +1103,7 @@ class MyPBQPage extends State<PBQFormPage>{
       data["question23"] = question23;
       data["question24"] = question24;
       data["question25"] = question25;
+      print("answers added");
       data["score"] = getfinalScore(scores);
       print(getfinalScore(scores));
       print(data);
@@ -1112,8 +1114,10 @@ class MyPBQPage extends State<PBQFormPage>{
   }
 
   double getfinalScore(List<int> scores) {
+    print(scores);
     int sum=0;
     for(var i=0;i<scores.length;i++){
+      print(scores[i]);
       sum+=scores[i];
     }
     return sum/scores.length;
