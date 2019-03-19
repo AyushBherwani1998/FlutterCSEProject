@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_forms/firebase_services/firebase_auth.dart';
+import 'package:flutter_forms/user_interface/existing_patient.dart';
 import 'package:flutter_forms/user_interface/new_patient.dart';
 
 
@@ -117,11 +118,14 @@ class MyHomePage extends State<HomePage>{
             color: Colors.blueAccent,
             child: ListTile(
               onTap: (){
-
+                print("New Form");
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>ExistingPatient()));
               },
               contentPadding: EdgeInsets.all(14.0),
               title: Text("Existing Patient",style: TextStyle(color: Colors.white,fontSize: 16.0),),
-              trailing: IconButton(icon: Icon(Icons.add,color: Colors.white,),onPressed: (){print("New Form");
+              trailing: IconButton(icon: Icon(Icons.add,color: Colors.white,),onPressed: (){
+                print("New Form");
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>ExistingPatient()));
               },),
             ),
           )
