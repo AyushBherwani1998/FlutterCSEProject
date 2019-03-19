@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_forms/firebase_services/firestore_search_service.dart';
+import 'package:flutter_forms/user_interface/dashboard_for_existing_user.dart';
 class ExistingPatient extends StatelessWidget{
 
   @override
@@ -115,8 +116,12 @@ class _ExistingPatientBody extends State<ExisitingPatientBody>{
       elevation: 4.0,
       color: Colors.blue,
       child: ListTile(
+        onTap: (){
+          print(element);
+          Navigator.push(context, MaterialPageRoute(builder: (context)=>ExistingUserDashboard(mobile:element['mobile'])));
+        },
         contentPadding: EdgeInsets.all(14.0),
-        title: Text(element['name'],style: TextStyle(color: Colors.white,fontSize: 16.0),),
+        title: Text(element['name'],style: TextStyle(color: Colors.white,fontSize: 24.0,fontWeight: FontWeight.w600),),
         subtitle: Text(element['mobile'],style: TextStyle(color: Colors.white)),
       ),
     );
