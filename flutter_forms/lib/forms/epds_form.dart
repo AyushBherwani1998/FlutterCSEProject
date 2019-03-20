@@ -444,6 +444,7 @@ class EPDSFormPage extends State<EPDSForm> {
                           value: question1,
                           iconSize: 30.0,
                           elevation: 8,
+
                           onChanged: (value) {
                             setState(() {
                               question1 = value;
@@ -743,17 +744,21 @@ class EPDSFormPage extends State<EPDSForm> {
                   height: 16.0,
                 ),
                 Container(
-                    margin: EdgeInsets.fromLTRB(50, 0.0, 50, 0.0),
-                    child: MaterialButton(
-                      onPressed: submit,
-                      color: Colors.blue,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(16.0)),
+                    color: Colors.blue,
+                  ),
+                  margin: EdgeInsets.fromLTRB(50, 0.0, 50, 0.0),
+                  child: GestureDetector(
+                    onTap: submit,
+                    child: Center(
                       child: Container(
-                          padding: EdgeInsets.all(12.0),
-                          child: Text(
-                            "Submit",
-                            style: TextStyle(color: Colors.white),
-                          )),
-                    )),
+                          padding:EdgeInsets.all(12.0),
+                          child:Text("Submit",style: TextStyle(color:Colors.white),)
+                      ),
+                    ),
+                  ),
+                ),
               ],
             )),
       ),
@@ -766,6 +771,10 @@ class EPDSFormPage extends State<EPDSForm> {
       setState(() {
         autoValidate = true;
       });
+    }else if(question1==""||question2==""||question3==""||question4==""||question5==""||question6==""||question7==""||question8==""||
+        question9==""||question10==""){
+      Scaffold.of(context).showSnackBar(
+          SnackBar(content: Text("Some fields are Empty")));
     } else {
       var data = Map<String, dynamic>();
       data["address"] = addressController.text.toString();
@@ -799,11 +808,11 @@ class EPDSFormPage extends State<EPDSForm> {
     }
   }
 
-  double getFinalScore(List<int> scores) {
+  int getFinalScore(List<int> scores) {
     int sum = 0;
     for (var i = 0; i < scores.length; i++) {
       sum += scores[i];
     }
-    return sum / scores.length;
+    return sum;
   }
 }
