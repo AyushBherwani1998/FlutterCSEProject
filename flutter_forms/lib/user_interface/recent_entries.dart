@@ -1,58 +1,108 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_forms/firebase_services/firestore_search_service.dart';
-import 'package:flutter_forms/firebase_services/firebase_auth.dart';
 import 'package:flutter_forms/user_interface/recent_patient.dart';
-class RecentE extends StatelessWidget {
+
+class RecentEntryActivity extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Recent Entries",style: TextStyle(color: Colors.black),),
+        title: Text(
+          "Recent Entries",
+          style: TextStyle(color: Colors.black),
+        ),
         backgroundColor: Colors.white,
         iconTheme: IconThemeData(color: Colors.black),
       ),
-      body: Recent(),
+      body: RecentEntryBody(),
     );
   }
 }
-class Recent extends StatefulWidget{
+
+class RecentEntryBody extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    return RecentPatient();
+    return _RecentEntryBody();
+  }
+}
+
+class _RecentEntryBody extends State<RecentEntryBody> {
+  var recentEntriesList = [];
+  var documentsList = [];
+  @override
+  void initState() {
+    super.initState();
+    getDocuments();
   }
 
-}
-class RecentPatient extends State<Recent> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.white,
+    return recentEntriesList!=null?
+    Container(
+      color: Colors.white70,
       padding: EdgeInsets.all(10.0),
       child: ListView.builder(
-        itemCount: 5, //no. of recent forms,
-        itemBuilder: (BuildContext context, int index) {
-          return Card(
-            color: Colors.blue,
-            elevation: 10.0,
-            child: ListTile(
-              onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context)=>RecentP()));},
-              isThreeLine: true,
-              title: Text(
-                "Name of Patient: ",
-              ),
-              //give name of form
-              subtitle: Text("Action Required: \n"),
-              //add score and date
-              trailing: IconButton(
-                  icon: Icon(Icons.album),
-                  onPressed: null), // give color on the basis of score
-            ),
-          );
-        },
         physics: BouncingScrollPhysics(),
         scrollDirection: Axis.vertical,
+        itemCount: recentEntriesList.length, //no. of recent forms,
+        itemBuilder: (BuildContext context, int index) {
+          return Card(
+            color: Colors.white,
+            elevation: 10.0,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16.0),
+            ),
+
+            child: Padding(padding: EdgeInsets.all(8.0),
+            child: ListTile(
+              onTap: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => RecentP()));
+              },
+              title: Text(recentEntriesList[index]['name'].toString(),
+                  style: TextStyle(
+                      color: Colors.black87,
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.w400)),
+              //give name of form
+              subtitle: Text("Form: "+recentEntriesList[index]['form'],
+                  style: TextStyle(color: Colors.black54)),
+              //add score and date
+              trailing: Container(
+                width: 24.0,
+                height: 24.0,
+                decoration: BoxDecoration(
+                    color: getScoreColor(recentEntriesList[index]['score']),
+                    borderRadius: BorderRadius.all(Radius.circular(50.0))),
+              )),)
+          );
+        },
       ),
-    );
+    ):
+    Container(color: Colors.green,child: Text('Null'),);
+  }
+
+  MaterialColor getScoreColor(int score) {
+    if (score < 10)
+      return Colors.green;
+    else if (score > 10 && score < 30)
+      return Colors.yellow;
+    else
+      return Colors.red;
+  }
+
+  Future<void> getDocuments() async{
+    await Firestore.instance
+        .collection('recent_entries')
+        .getDocuments()
+        .then((QuerySnapshot docs) {
+      documentsList = docs.documents;
+      for (int i = 0; i < documentsList.length; i++) {
+        setState(() {
+          recentEntriesList.add(documentsList[i].data);
+        });
+        print(recentEntriesList);
+      }
+    });
   }
 }

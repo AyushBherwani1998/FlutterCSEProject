@@ -101,7 +101,9 @@ class _ExistingPatientBody extends State<ExisitingPatientBody>{
     if(queryResultSet.length==0 && val.length==1){
       SearchService().searchByName(val).then((QuerySnapshot docs) {
         for (int i = 0; i < docs.documents.length; ++i) {
+        setState(() {
           queryResultSet.add(docs.documents[i].data);
+        });
         }
       });
     }else{
