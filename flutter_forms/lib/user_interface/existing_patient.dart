@@ -48,6 +48,7 @@ class _ExistingPatientBody extends State<ExisitingPatientBody>{
           child: Padding(
             padding: const EdgeInsets.all(10.0),
             child: TextField(
+              autofocus: true,
               keyboardType: TextInputType.numberWithOptions(),
               controller: forSearch,
               onChanged: (val) {
