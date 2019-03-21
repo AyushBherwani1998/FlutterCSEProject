@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_forms/firebase_services/firebase_auth.dart';
 import 'package:flutter_forms/user_interface/existing_patient.dart';
 import 'package:flutter_forms/user_interface/new_patient.dart';
+import 'package:flutter_forms/user_interface/recent_entries.dart';
 
 
 
@@ -63,6 +64,7 @@ class MyHome extends State<Home> {
             ListTile(
               title: Text('Recent Entries'),
               onTap: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>RecentE()));
                 print("Recent Entries");
               },
             ),
