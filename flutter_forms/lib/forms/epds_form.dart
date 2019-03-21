@@ -814,6 +814,7 @@ class EPDSFormPage extends State<EPDSForm> {
       recentEntry['user id'] = uniqueId;
       recentEntry['name']= name;
       recentEntry['epds_response_number'] = response_count+1;
+      recentEntry['date'] = DateTime.now();
       Firestore.instance
           .collection('user')
           .document('$uniqueId')

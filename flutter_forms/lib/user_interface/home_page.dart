@@ -48,11 +48,9 @@ class MyHome extends State<Home> {
           padding: EdgeInsets.zero,
           children: <Widget>[
             DrawerHeader(
-              child: Center(
-                child: Text("Demo App"),
-              ),
+              child: Image(image: AssetImage("images/header_img.jpg"),),
               decoration: BoxDecoration(
-                color: Colors.white70,
+                color: Colors.white,
               ),
             ),
             ListTile(
