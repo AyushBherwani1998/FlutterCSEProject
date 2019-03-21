@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -30,6 +31,7 @@ class SocialDemoFormBody extends StatefulWidget {
 
 class _SocialDemoFormBody extends State<SocialDemoFormBody> {
 
+  String uid=null;
   //Form Field Start
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _autoValidateForm = false;
@@ -226,6 +228,7 @@ class _SocialDemoFormBody extends State<SocialDemoFormBody> {
                 height: 16.0,
               ),
               TextFormField(
+                controller: caseNo,
                 decoration: InputDecoration(
                   enabledBorder: const OutlineInputBorder(
                     borderSide: const BorderSide(color: Colors.black87, width: 0.0),
@@ -249,6 +252,7 @@ class _SocialDemoFormBody extends State<SocialDemoFormBody> {
                 height: 16.0,
               ),
               TextFormField(
+                textCapitalization: TextCapitalization.words,
                 controller: nameOfResearchAssistant,
                 decoration: InputDecoration(
                   enabledBorder: const OutlineInputBorder(
@@ -273,6 +277,7 @@ class _SocialDemoFormBody extends State<SocialDemoFormBody> {
                 height: 16.0,
               ),
               TextFormField(
+                textCapitalization: TextCapitalization.words,
                 controller: consultantName,
                 decoration: InputDecoration(
                   enabledBorder: const OutlineInputBorder(
@@ -297,6 +302,7 @@ class _SocialDemoFormBody extends State<SocialDemoFormBody> {
                 height: 16.0,
               ),
               TextFormField(
+                textCapitalization: TextCapitalization.words,
                 controller: respondentName,
                 decoration: InputDecoration(
                   enabledBorder: const OutlineInputBorder(
@@ -353,7 +359,7 @@ class _SocialDemoFormBody extends State<SocialDemoFormBody> {
                 height: 16.0,
               ),
               TextFormField(
-                keyboardType: TextInputType.numberWithOptions(),
+                textCapitalization: TextCapitalization.words,
                 controller: cityName,
                 decoration: InputDecoration(
                   enabledBorder: const OutlineInputBorder(
@@ -414,7 +420,7 @@ class _SocialDemoFormBody extends State<SocialDemoFormBody> {
                 height: 16.0,
               ),
               TextFormField(
-                keyboardType: TextInputType.numberWithOptions(),
+                textCapitalization: TextCapitalization.words,
                 controller: stateName,
                 decoration: InputDecoration(
                   enabledBorder: const OutlineInputBorder(
@@ -514,7 +520,7 @@ class _SocialDemoFormBody extends State<SocialDemoFormBody> {
                       height: 16.0,
                     ),
                     TextFormField(
-                      keyboardType: TextInputType.numberWithOptions(),
+                      textCapitalization: TextCapitalization.words,
                       controller: otherReligion,
                       decoration: InputDecoration(
                         enabledBorder: const OutlineInputBorder(
@@ -1253,10 +1259,114 @@ class _SocialDemoFormBody extends State<SocialDemoFormBody> {
   }
 
   void submit() {
-    if(_formKey.currentState.validate())
+    if(_formKey.currentState.validate()) {
       print("validated");
+      if(int.parse(garvida.text.toString())>1){
+        if(purposeOfVisit.isEmpty || caste.isEmpty || religion.isEmpty|| residentialLocality.isEmpty ||
+            socialEconomicStatus.isEmpty || birthInterval.isEmpty || familyIncome.isEmpty || highRiskPregnancy.isEmpty || placeOfPreviousDelivery.isEmpty||
+            previousChildSex.isEmpty||placeOfPreviousDelivery.isEmpty){
+          Scaffold.of(context).showSnackBar(
+              SnackBar(content: Text("Some fields are Empty")));
+        }else{
+          Map map = Map<String,dynamic>();
+          map['date'] = DateTime.now();
+          map['purpose for hospital visit'] = purposeOfVisit;
+          map['case no'] = caseNo.text.toString();
+          map['research assistant name'] = nameOfResearchAssistant.text.toString();
+          map['consultant name'] = consultantName.text.toString();
+          map['respondent name'] =  respondentName.text.toString();
+          map['mobile'] = mobileNumber.text.toString();
+          map['city'] = cityName.text.toString();
+          map['residential locality'] = residentialLocality;
+          map['state'] = stateName.text.toString();
+          map['caste'] = caste;
+          (religion=="Other")?map['religion'] = otherReligion : map['religion'] = religion;
+          map['social-econmic status'] = socialEconomicStatus;
+          map['no of family members'] = numberOfFamilyMember.text.toString();
+          map['annual income'] = familyIncome;
+          map['age'] = age.text.toString();
+          map['age at marriage'] = ageAtMarriage.text.toString();
+          map['expected delivery date'] = expectedDeliveryDate;
+          map['gestational age'] = currentGestationalAge.text.toString();
+          map['weight'] = motherWeight.text.toString();
+          map['garvida'] = garvida.text.toString();
+          map['age at first pregnancy'] = ageAtFirstP.text.toString();
+          map['abortions'] = abortions.text.toString();
+          map['para'] = para.text.toString();
+          map['no of live births'] = numberOfLiveBirths.text.toString();
+          map['current birth order'] = birthOrderOfChild.text.toString();
+          map['birth interval'] = birthInterval;
+          map['high risk pregnancy'] = highRiskPregnancy;
+          map['type of delivery'] = typeOfDelivery;
+          map['place of previous delivery'] = placeOfPreviousDelivery;
+          map['previous child sex'] = previousChildSex;
+          Map userData = Map<String,dynamic>();
+          userData['name'] = respondentName.text.toString();
+          userData['searchKey'] = mobileNumber.text.toString().substring(0,1);
+          userData['age'] = age.text.toString();
+          userData['mobile'] = mobileNumber.text.toString();
+          userData['epds_count'] = 0;
+          userData['pbq_count'] = 0;
+          final collRef = Firestore.instance.collection('user');
+          DocumentReference docReference = collRef.document();
+          docReference.collection('social demography form').document('response').setData(map).then((doc){
+            print(docReference.documentID);
+            uid = docReference.documentID;
+          });
+          Firestore.instance.collection('user').document(uid).setData(userData).whenComplete((){
+            Navigator.pop(context,uid);
+          });
+
+        }
+      }else{
+        if(purposeOfVisit.isEmpty || caste.isEmpty || religion.isEmpty|| residentialLocality.isEmpty ||
+            socialEconomicStatus.isEmpty||familyIncome.isEmpty){
+          Scaffold.of(context).showSnackBar(
+              SnackBar(content: Text("Some fields are Empty")));
+        }else{
+          Map map = Map<String,dynamic>();
+          map['date'] = DateTime.now();
+          map['purpose for hospital visit'] = purposeOfVisit;
+          map['case no'] = caseNo.text.toString();
+          map['research assistant name'] = nameOfResearchAssistant.text.toString();
+          map['consultant name'] = consultantName.text.toString();
+          map['respondent name'] =  respondentName.text.toString();
+          map['mobile'] = mobileNumber.text.toString();
+          map['city'] = cityName.text.toString();
+          map['residential locality'] = residentialLocality;
+          map['state'] = stateName.text.toString();
+          map['caste'] = caste;
+          (religion=="Other")?map['religion'] = otherReligion : map['religion'] = religion;
+          map['social-econmic status'] = socialEconomicStatus;
+          map['no of family members'] = numberOfFamilyMember.text.toString();
+          map['annual income'] = familyIncome;
+          map['age'] = age.text.toString();
+          map['age at marriage'] = ageAtMarriage.text.toString();
+          map['expected delivery date'] = expectedDeliveryDate;
+          map['gestational age'] = currentGestationalAge.text.toString();
+          map['weight'] = motherWeight.text.toString();
+          map['garvida'] = garvida.text.toString();
+          Map userData = Map<String,dynamic>();
+          userData['name'] = respondentName.text.toString();
+          userData['searchKey'] = mobileNumber.text.toString().substring(0,1);
+          userData['age'] = age.text.toString();
+          userData['mobile'] = mobileNumber.text.toString();
+          userData['epds_count'] = 0;
+          userData['pbq_count'] = 0;
+          final collRef = Firestore.instance.collection('user');
+          DocumentReference docReference = collRef.document();
+          docReference.collection('social demography form').document('response').setData(map).then((doc){
+            print(docReference.documentID);
+            uid = docReference.documentID;
+          });
+          Firestore.instance.collection('user').document(uid).setData(userData).whenComplete((){
+            Navigator.pop(context,uid);
+          });
+        }
+      }
+    }
     else
       print("not validated");
-      _autoValidateForm = true;
+
   }
 }

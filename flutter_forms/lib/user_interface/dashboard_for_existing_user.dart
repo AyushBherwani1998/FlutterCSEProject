@@ -69,12 +69,12 @@ class _ExistingPatientDashboardBody extends State<ExistingPatientDashboardBody>{
                 onTap: (){
                   print("New EPDS Form");
                   print(uid);
-                  //Navigator.push(context, MaterialPageRoute(builder: (context)=>EPDS()));
+                  Navigator.push(context, MaterialPageRoute(builder: (context)=>EPDS(uid: uid,)));
                 },
                 contentPadding: EdgeInsets.all(14.0),
                 title: Text("EPDS Form",style: TextStyle(color: Colors.white,fontSize: 16.0),),
                 trailing: IconButton(icon: Icon(Icons.add,color: Colors.white,),onPressed: (){print("New EPDS Form");
-                Navigator.push(context, MaterialPageRoute(builder: (context)=>EPDS()));
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>EPDS(uid: uid,)));
                 },),
               ),
             ),
@@ -92,7 +92,7 @@ class _ExistingPatientDashboardBody extends State<ExistingPatientDashboardBody>{
                 contentPadding: EdgeInsets.all(14.0),
                 title: Text("PBQ Form",style: TextStyle(color: Colors.white,fontSize: 16.0),),
                 trailing: IconButton(icon: Icon(Icons.add,color: Colors.white,),onPressed: (){print("New PBQ Form");
-                Navigator.push(context, MaterialPageRoute(builder: (context)=>PBQForm()));
+                Navigator.pop(context);
                 },),
               ),
             )

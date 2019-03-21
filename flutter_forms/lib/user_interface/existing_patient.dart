@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_forms/firebase_services/firestore_search_service.dart';
@@ -34,6 +35,7 @@ class _ExistingPatientBody extends State<ExisitingPatientBody>{
   var queryResultSet = [];
   var tempSearchStore = [];
   bool checkList = false;
+  TextEditingController forSearch = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -46,6 +48,8 @@ class _ExistingPatientBody extends State<ExisitingPatientBody>{
           child: Padding(
             padding: const EdgeInsets.all(10.0),
             child: TextField(
+              keyboardType: TextInputType.numberWithOptions(),
+              controller: forSearch,
               onChanged: (val) {
                 startSearch(val);
                 setState((){
@@ -113,17 +117,32 @@ class _ExistingPatientBody extends State<ExisitingPatientBody>{
 
   Widget buildUserCard(element) {
     return Card(
-      elevation: 4.0,
-      color: Colors.blue,
+      elevation: 8.0,
+      color: Colors.white,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16.0),
+      ),
       child: ListTile(
         onTap: (){
           print(element);
+          forSearch.clear();
+          setState(() {
+            queryResultSet = [];
+            tempSearchStore = [];
+            checkList = false;
+          });
           Navigator.push(context, MaterialPageRoute(builder: (context)=>ExistingUserDashboard(mobile:element['mobile'])));
         },
-        contentPadding: EdgeInsets.all(14.0),
-        title: Text(element['name'],style: TextStyle(color: Colors.white,fontSize: 24.0,fontWeight: FontWeight.w600),),
-        subtitle: Text(element['mobile'],style: TextStyle(color: Colors.white)),
-      ),
-    );
+        contentPadding: EdgeInsets.all(8.0),
+        leading: Icon(Icons.account_circle,size: 56.0,color: getColor(),),
+        title: Text(element['name'],style: TextStyle(color: Colors.black,fontSize: 24.0,fontWeight: FontWeight.w500),),
+        subtitle: Text(element['mobile'],style: TextStyle(color: Colors.black54))
+        ),
+      );
+  }
+
+  MaterialColor getColor() {
+    List<MaterialColor> colors = [Colors.blue,Colors.green,Colors.grey,Colors.amber,Colors.deepOrange];
+    return (colors[Random().nextInt(4)]);
   }
 }

@@ -40,6 +40,9 @@ class EPDSForm extends StatefulWidget {
 }
 
 class EPDSFormPage extends State<EPDSForm> {
+  final String uniqueId;
+
+  EPDSFormPage({this.uniqueId});
   TextEditingController addressController = new TextEditingController();
   TextEditingController phoneController = new TextEditingController();
   DateTime babyDob;
@@ -128,11 +131,8 @@ class EPDSFormPage extends State<EPDSForm> {
   String name;
   DocumentReference documentReference;
   StreamSubscription<DocumentSnapshot> subscription;
-  final String uniqueId;
 
-  EPDSFormPage({this.uniqueId});
-
-  int response_count;
+  int response_count=0;
   bool autoValidate = false;
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -280,6 +280,7 @@ class EPDSFormPage extends State<EPDSForm> {
                   height: 8.0,
                 ),
                 TextFormField(
+                  textCapitalization: TextCapitalization.words,
                   controller: addressController,
                   maxLines: 3,
                   decoration: InputDecoration(
@@ -423,6 +424,7 @@ class EPDSFormPage extends State<EPDSForm> {
                   height: 8.0,
                 ),
                 Container(
+                  width: MediaQuery.of(context).size.width,
                   margin: EdgeInsets.all(8.0),
                   child: Text(
                     "I have been able to laugh and see funny side of things",
@@ -430,6 +432,7 @@ class EPDSFormPage extends State<EPDSForm> {
                   ),
                 ),
                 Container(
+
                   padding: EdgeInsets.fromLTRB(8.0, 0.0, 8.0, 0.0),
                   width: MediaQuery.of(context).size.width,
                   decoration: BoxDecoration(
@@ -456,6 +459,7 @@ class EPDSFormPage extends State<EPDSForm> {
                   height: 16.0,
                 ),
                 Container(
+                  width: MediaQuery.of(context).size.width,
                   margin: EdgeInsets.all(8.0),
                   child: Text(
                     "I have look forward with enjoyment to things",
@@ -488,6 +492,7 @@ class EPDSFormPage extends State<EPDSForm> {
                   height: 16.0,
                 ),
                 Container(
+                  width: MediaQuery.of(context).size.width,
                   margin: EdgeInsets.all(8.0),
                   child: Text(
                     "I have blamed myself unnecessaily when things went wrong",
@@ -520,6 +525,7 @@ class EPDSFormPage extends State<EPDSForm> {
                   height: 16.0,
                 ),
                 Container(
+                  width: MediaQuery.of(context).size.width,
                   margin: EdgeInsets.all(8.0),
                   child: Text(
                     "I have been anxious or worried for no good reason",
@@ -527,6 +533,7 @@ class EPDSFormPage extends State<EPDSForm> {
                   ),
                 ),
                 Container(
+
                   padding: EdgeInsets.fromLTRB(8.0, 0.0, 8.0, 0.0),
                   width: MediaQuery.of(context).size.width,
                   decoration: BoxDecoration(
@@ -552,6 +559,7 @@ class EPDSFormPage extends State<EPDSForm> {
                   height: 16.0,
                 ),
                 Container(
+                  width: MediaQuery.of(context).size.width,
                   margin: EdgeInsets.all(8.0),
                   child: Text(
                     "I have felt scared or panicky for no very good reason",
@@ -584,6 +592,7 @@ class EPDSFormPage extends State<EPDSForm> {
                   height: 16.0,
                 ),
                 Container(
+                  width: MediaQuery.of(context).size.width,
                   margin: EdgeInsets.all(8.0),
                   child: Text(
                     "Things have been getting on top of me",
@@ -616,6 +625,7 @@ class EPDSFormPage extends State<EPDSForm> {
                   height: 16.0,
                 ),
                 Container(
+                  width: MediaQuery.of(context).size.width,
                   margin: EdgeInsets.all(8.0),
                   child: Text(
                     "I have been so unhappy that I have had difficult sleeping",
@@ -648,6 +658,7 @@ class EPDSFormPage extends State<EPDSForm> {
                   height: 16.0,
                 ),
                 Container(
+                  width: MediaQuery.of(context).size.width,
                   margin: EdgeInsets.all(8.0),
                   child: Text(
                     "I have felt sad or misserable",
@@ -680,6 +691,7 @@ class EPDSFormPage extends State<EPDSForm> {
                   height: 16.0,
                 ),
                 Container(
+                  width: MediaQuery.of(context).size.width,
                   margin: EdgeInsets.all(8.0),
                   child: Text(
                     "I have been so unhappy that I have been crying",
@@ -712,6 +724,7 @@ class EPDSFormPage extends State<EPDSForm> {
                   height: 16.0,
                 ),
                 Container(
+                  width: MediaQuery.of(context).size.width,
                   margin: EdgeInsets.all(8.0),
                   child: Text(
                     "The thought of harming myself has occured to me",
@@ -759,6 +772,9 @@ class EPDSFormPage extends State<EPDSForm> {
                     ),
                   ),
                 ),
+                SizedBox(
+                  height: 8.0,
+                ),
               ],
             )),
       ),
@@ -776,6 +792,7 @@ class EPDSFormPage extends State<EPDSForm> {
       Scaffold.of(context).showSnackBar(
           SnackBar(content: Text("Some fields are Empty")));
     } else {
+      int fScore= getFinalScore(scores);
       var data = Map<String, dynamic>();
       data["address"] = addressController.text.toString();
       data["phone"] = phoneController.text.toString();
@@ -791,7 +808,8 @@ class EPDSFormPage extends State<EPDSForm> {
       data["question8"] = question8;
       data["question9"] = question9;
       data["question10"] = question10;
-      data["score"] = getFinalScore(scores);
+      data["score"] = fScore;
+      print(response_count);
       data["response_number"] = response_count + 1;
       Firestore.instance
           .collection('user')
@@ -803,16 +821,18 @@ class EPDSFormPage extends State<EPDSForm> {
           .collection('user')
           .document('$uniqueId')
           .updateData({"epds_count": response_count + 1});
-      Navigator.pushReplacement(context,
-          MaterialPageRoute(builder: (context) => PBQForm(uid: uniqueId)));
+      Navigator.pop(context,fScore);
     }
   }
 
-  int getFinalScore(List<int> scores) {
+  int getFinalScore(List<int> scores){
     int sum = 0;
+    print(scores);
     for (var i = 0; i < scores.length; i++) {
+      print(scores[i]);
       sum += scores[i];
     }
     return sum;
   }
+
 }
