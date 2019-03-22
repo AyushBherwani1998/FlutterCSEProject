@@ -57,7 +57,7 @@ class _RecentEntryBody extends State<RecentEntryBody> {
             child: ListTile(
               onTap: () {
                 Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => RecentP()));
+                    MaterialPageRoute(builder: (context) => RecentPatientActivity(userId: recentEntriesList[index]['user id'],)));
               },
               title: Text(recentEntriesList[index]['name'].toString(),
                   style: TextStyle(

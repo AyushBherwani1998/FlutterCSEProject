@@ -1,6 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-class RecentP extends StatelessWidget {
+class RecentPatientActivity extends StatelessWidget {
+  final String userId;
+  RecentPatientActivity({this.userId});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -12,19 +15,50 @@ class RecentP extends StatelessWidget {
         backgroundColor: Colors.white,
         iconTheme: IconThemeData(color: Colors.black),
       ),
-      body: Patient(),
+      body: RecentPatientBody(userId: userId),
     );
   }
 }
 
-class Patient extends StatefulWidget {
+class RecentPatientBody extends StatefulWidget {
+  final String userId;
+  RecentPatientBody({this.userId});
   @override
   State<StatefulWidget> createState() {
-    return MyPatient();
+    return _RecentPatientBody(userId: userId);
   }
 }
 
-class MyPatient extends State<Patient> {
+class _RecentPatientBody extends State<RecentPatientBody> {
+  final String userId;
+  var userDetails;
+  var getEPDSDocs=[];
+  var getSocialDemographyDoc=[];
+  var getEPDSList=[];
+  _RecentPatientBody({this.userId});
+  @override
+  void initState() {
+    super.initState();
+    Firestore.instance.collection('user').document(userId).get().then((DocumentSnapshot doc){
+      if(doc!=null){
+        setState(() {
+          userDetails = doc.data;
+        });
+      }
+      print(userDetails);
+    });
+    Firestore.instance.collection('user').document(userId).collection('epds_responses').getDocuments().then((QuerySnapshot docs){
+      getEPDSDocs = docs.documents;
+      for(int i=0;i<getEPDSDocs.length;i++){
+        setState(() {
+          getEPDSList.add(getEPDSDocs[i].data);
+        });
+      }
+      print(getEPDSList);
+
+    });
+    
+  }
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -35,11 +69,11 @@ class MyPatient extends State<Patient> {
           child: Card(
             child: Column(
               children: <Widget>[
-                const ListTile(
+                ListTile(
                   leading: Icon(Icons.album),
-                  title: Text('\n\nName: '),
+                  title: Text('\n\nName:${userDetails['name']==null?"":userDetails['name']}'),
                   subtitle: Text(
-                      'No. of PBQ forms: \nNo. of EPDS forms: \nAction recommended: \n\n\n'),
+                      'No. of PBQ forms: ${userDetails['pbq_count']==null?"":userDetails['pbq_count']}\nNo. of EPDS forms: ${userDetails['epds_count']==null?"":userDetails['epds_count']}'),
                 ),
               ],
             ),
