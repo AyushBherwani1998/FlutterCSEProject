@@ -67,6 +67,8 @@ class _RecentPatientBody extends State<RecentPatientBody> {
           color: Colors.grey.shade300,
           padding: EdgeInsets.all(10.0),
           child: Card(
+            elevation: 10.0,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
             child: Column(
               children: <Widget>[
                 ListTile(
@@ -88,8 +90,9 @@ class _RecentPatientBody extends State<RecentPatientBody> {
               itemCount: 10, //no. of recent forms,
               itemBuilder: (BuildContext context, int index) {
                 return Card(
-                  color: Colors.blue,
-                  elevation: 10.0,
+                  elevation: 15.0,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
+                  color: Colors.white,
                   child: ListTile(
                     isThreeLine: true,
                     title: Text(
@@ -99,7 +102,7 @@ class _RecentPatientBody extends State<RecentPatientBody> {
                     subtitle: Text("Score:  \nDate:dd/mm/yy "),
                     //add score and date
                     trailing: IconButton(
-                        icon: Icon(Icons.album),
+                        icon: Icon(Icons.album,color: Colors.yellow,),
                         onPressed: null), // give color on the basis of score
                   ),
                 );
