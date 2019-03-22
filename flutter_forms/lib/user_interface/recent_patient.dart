@@ -64,16 +64,17 @@ class _RecentPatientBody extends State<RecentPatientBody> {
     return Column(
       children: [
         Container(
-          color: Colors.grey.shade200,
+          color: Colors.grey.shade300,
           padding: EdgeInsets.all(10.0),
           child: Card(
             child: Column(
               children: <Widget>[
                 ListTile(
-                  leading: Icon(Icons.album),
-                  title: Text('\n\nName:${userDetails==null?"":userDetails['name']}'),
-                  subtitle: Text(
-                      'No. of PBQ forms: ${userDetails==null?"":userDetails['pbq_count']}\nNo. of EPDS forms: ${userDetails==null?"":userDetails['epds_count']}'),
+                  contentPadding: EdgeInsets.all(10.0),
+                  title: Text('Name:${userDetails==null?"":userDetails['name']}',style: TextStyle(fontSize: 22.0)),
+                  subtitle:
+                  Text(
+                      '\nNo. of PBQ forms: ${userDetails==null?"":userDetails['pbq_count']}\nNo. of EPDS forms: ${userDetails==null?"":userDetails['epds_count']}'),
                 ),
               ],
             ),
@@ -84,7 +85,7 @@ class _RecentPatientBody extends State<RecentPatientBody> {
             color: Colors.white,
             padding: EdgeInsets.all(10.0),
             child: ListView.builder(
-              itemCount: 5, //no. of recent forms,
+              itemCount: 10, //no. of recent forms,
               itemBuilder: (BuildContext context, int index) {
                 return Card(
                   color: Colors.blue,
@@ -92,10 +93,10 @@ class _RecentPatientBody extends State<RecentPatientBody> {
                   child: ListTile(
                     isThreeLine: true,
                     title: Text(
-                      "Type of form: PBQ",
+                      "Type of form: ",
                     ),
                     //give name of form
-                    subtitle: Text("Score: 5 \nDate:dd/mm/yy "),
+                    subtitle: Text("Score:  \nDate:dd/mm/yy "),
                     //add score and date
                     trailing: IconButton(
                         icon: Icon(Icons.album),
