@@ -175,6 +175,7 @@ class _SocialDemoFormBody extends State<SocialDemoFormBody> {
 
   @override
   Widget build(BuildContext context) {
+    var _ageValidate = false;
     return Container(
       padding: EdgeInsets.all(8.0),
 
@@ -653,6 +654,7 @@ class _SocialDemoFormBody extends State<SocialDemoFormBody> {
                 height: 16.0,
               ),
               TextFormField(
+                autovalidate: _ageValidate,
                   keyboardType: TextInputType.numberWithOptions(decimal: false),
                   controller: age,
                   decoration: InputDecoration(
@@ -670,12 +672,18 @@ class _SocialDemoFormBody extends State<SocialDemoFormBody> {
                   ),
                   validator: (String age){
                     if(age!="") {
-                      if (int.parse(age) < 18 || int.parse(age) > 45) {
-                        return "Please Enter Valid Age";
-                      } else
-                        return null;
-                    }else
+                     if(isNumeric(age)){
+                       if (int.parse(age) < 18 || int.parse(age) > 45) {
+                         return "Please Enter Valid Age";
+                       } else
+                         return null;
+                     }else{
+                       return "Please Enter a Valid Age";
+                     }
+                    }else{
+                      ageAtMarriage.clear();
                       return "Please Enter your Age";
+                    }
                   }
 
               ),
@@ -698,14 +706,20 @@ class _SocialDemoFormBody extends State<SocialDemoFormBody> {
                   border: OutlineInputBorder(),
                   labelText: "Age at Marriage",
                 ),
-                validator: (String age){
-                  if(age!=""){
-                    if(age.length<2){
+                validator: (String age_of_marriage){
+                  if(age_of_marriage!="" || age.text.toString==""){
+                    if(isNumeric(age_of_marriage)){
+                      if(int.parse(age_of_marriage)<16 || int.parse(age_of_marriage)>int.tryParse(age.text.toString())){
+                        return "Enter a Valid Age";
+                      }else
+                        return null;
+                    }else{
                       return "Enter a Valid Age";
-                    }else
-                      return null;
-                  }else
-                    return "Enter Age at Marriage";
+                    }
+                  }else{
+                    _ageValidate = true;
+                    ageAtMarriage.clear();
+                  }
                 },
               ),
 
@@ -884,7 +898,7 @@ class _SocialDemoFormBody extends State<SocialDemoFormBody> {
                       validator: (String number){
                         if(number!="") {
                           if (int.parse(number) > 49 ||
-                              int.parse(number) < 14) {
+                              int.parse(number) < 14 || int.parse(number)>int.tryParse(age.text.toString())) {
                             return "Please Enter a Valid Age";
                           } else
                             return null;
@@ -915,7 +929,7 @@ class _SocialDemoFormBody extends State<SocialDemoFormBody> {
                       ),
                       validator: (String number){
                         if(number!="") {
-                          if (number.length > 1 || int.parse(number) >
+                          if (number.length > 1 || int.parse(number) >=
                               int.parse(garvida.text.toString())) {
                             return "Please Enter a Valid Number";
                           } else
@@ -947,8 +961,8 @@ class _SocialDemoFormBody extends State<SocialDemoFormBody> {
                       ),
                       validator: (String number){
                         if(number!="") {
-                          if (number.length > 1 || int.parse(number) >
-                              int.parse(garvida.text.toString())) {
+                          if (int.parse(number) >=
+                              int.parse(garvida.text.toString())-int.parse(abortions.text.toString())) {
                             return "Please Enter a Valid Number";
                           } else
                             return null;
@@ -979,11 +993,10 @@ class _SocialDemoFormBody extends State<SocialDemoFormBody> {
                       ),
                       validator: (String number){
                         if(number!=""){
-                          if(number.length>1 || int.parse(number)>int.parse(para.text.toString())) {
-                            validateForm.add(true);
+                          if(number.length>1 || int.parse(number)>=int.parse(para.text.toString())) {
                             return "Please Enter a Valid Number";
                           }else
-                            validateForm.add(false);
+                            return null;
                         }else
                           return "Please Enter a Number";
                       },
@@ -1232,23 +1245,21 @@ class _SocialDemoFormBody extends State<SocialDemoFormBody> {
               SizedBox(
                 height: 16.0,
               ),
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(16.0)),
-                  color: Colors.blue,
-                ),
-                margin: EdgeInsets.fromLTRB(50, 0.0, 50, 0.0),
-                child: GestureDetector(
-                  onTap: submit,
+              FlatButton(
+                onPressed: submit,
+                child: Container(
+                  width: 140.0,
+                  height: 50.0,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(16.0)),
+                    color: Colors.blue,
+                  ),
                   child: Center(
-                    child: Container(
-                        padding:EdgeInsets.all(12.0),
-                        child:Text("Submit",style: TextStyle(color:Colors.white),)
-                    ),
+                    child: Text("Submit",style: TextStyle(color: Colors.white,fontSize: 18.0),),
                   ),
                 ),
               ),
-              SizedBox(
+               SizedBox(
                 height: 8.0,
               )
             ],
@@ -1365,8 +1376,21 @@ class _SocialDemoFormBody extends State<SocialDemoFormBody> {
         }
       }
     }
-    else
+    else{
+      Scaffold.of(context).showSnackBar(
+          SnackBar(content: Text("Some fields are Empty")));
       print("not validated");
+      setState((){
+        _autoValidateForm = true;
+      });
+    }
 
+  }
+
+  bool isNumeric(String s) {
+    if(s == null) {
+      return false;
+    }
+    return double.parse(s, (e) => null) != null;
   }
 }
