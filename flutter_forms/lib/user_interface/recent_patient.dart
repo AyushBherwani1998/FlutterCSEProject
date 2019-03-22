@@ -71,9 +71,9 @@ class _RecentPatientBody extends State<RecentPatientBody> {
               children: <Widget>[
                 ListTile(
                   leading: Icon(Icons.album),
-                  title: Text('\n\nName:${userDetails['name']==null?"":userDetails['name']}'),
+                  title: Text('\n\nName:${userDetails==null?"":userDetails['name']}'),
                   subtitle: Text(
-                      'No. of PBQ forms: ${userDetails['pbq_count']==null?"":userDetails['pbq_count']}\nNo. of EPDS forms: ${userDetails['epds_count']==null?"":userDetails['epds_count']}'),
+                      'No. of PBQ forms: ${userDetails==null?"":userDetails['pbq_count']}\nNo. of EPDS forms: ${userDetails==null?"":userDetails['epds_count']}'),
                 ),
               ],
             ),
