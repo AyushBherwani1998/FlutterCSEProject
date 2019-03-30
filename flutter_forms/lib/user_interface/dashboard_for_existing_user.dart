@@ -69,12 +69,12 @@ class _ExistingPatientDashboardBody extends State<ExistingPatientDashboardBody>{
                 onTap: (){
                   print("New EPDS Form");
                   print(uid);
-                  Navigator.push(context, MaterialPageRoute(builder: (context)=>EPDS(uid: uid,)));
+                  _getEDPSScore(uid,context);
                 },
                 contentPadding: EdgeInsets.all(14.0),
                 title: Text("EPDS Form",style: TextStyle(color: Colors.white,fontSize: 16.0),),
                 trailing: IconButton(icon: Icon(Icons.add,color: Colors.white,),onPressed: (){print("New EPDS Form");
-                Navigator.push(context, MaterialPageRoute(builder: (context)=>EPDS(uid: uid,)));
+                _getEDPSScore(uid,context);
                 },),
               ),
             ),
@@ -99,5 +99,24 @@ class _ExistingPatientDashboardBody extends State<ExistingPatientDashboardBody>{
           ],
         )
     );
+  }
+
+  void _getEDPSScore(String uid, BuildContext context)async {
+    final result = await Navigator.push(context, MaterialPageRoute(builder: (context)=>EPDS(uid: uid)));
+    if(result!=null){
+      showDialog(context: context,
+          builder: (BuildContext context){
+            return AlertDialog(
+              title: Text("EPDS Response Recorded"),
+              content:Text("Your EPDS Score is $result"),
+              actions: <Widget>[
+                FlatButton(child:Text("Okay"), onPressed: () {
+                  print("Pressed Okay, Dismiss Alert Dialog");
+                  Navigator.pop(context);
+                },)
+              ],
+            );
+          });
+    }
   }
 }

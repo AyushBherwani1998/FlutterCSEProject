@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_forms/forms/pbq_form.dart';
+
 import 'package:intl/intl.dart';
 
 class EPDS extends StatelessWidget {
@@ -809,8 +809,14 @@ class EPDSFormPage extends State<EPDSForm> {
       data["question9"] = question9;
       data["question10"] = question10;
       data["score"] = fScore;
-      print(response_count);
       data["response_number"] = response_count + 1;
+      Map recentEntry = Map<String,dynamic>();
+      recentEntry['user id'] = uniqueId;
+      recentEntry['name']= name;
+      recentEntry['epds_response_number'] = response_count+1;
+      recentEntry['form'] = "EPDS";
+      recentEntry['score'] = fScore;
+      recentEntry['date'] = DateTime.now();
       Firestore.instance
           .collection('user')
           .document('$uniqueId')
@@ -821,6 +827,7 @@ class EPDSFormPage extends State<EPDSForm> {
           .collection('user')
           .document('$uniqueId')
           .updateData({"epds_count": response_count + 1});
+      Firestore.instance.collection('recent_entries').document().setData(recentEntry);
       Navigator.pop(context,fScore);
     }
   }
