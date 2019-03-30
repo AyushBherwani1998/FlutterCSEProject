@@ -532,19 +532,6 @@ class _SocialDemoFormBody extends State<SocialDemoFormBody> {
                     labelText: "City / Village / Town",
                   ),
                   validator: (String value) {
-                    Firestore.instance
-                        .collection('user')
-                        .where('searchKeyName',
-                        isEqualTo: mobileNumber.text.toString())
-                        .getDocuments().then((QuerySnapshot docs){
-                      if(docs.documents.length!=0){
-                        setState(() {
-                          checkExistingUser = true;
-
-                        });
-                      }
-                    });
-
                     if (value.length < 1)
                       return "Please Enter your City";
                     else
@@ -1547,6 +1534,18 @@ class _SocialDemoFormBody extends State<SocialDemoFormBody> {
 
   void submit() {
     if (_formKey.currentState.validate()) {
+      Firestore.instance
+          .collection('user')
+          .where('mobile', isEqualTo: mobileNumber.text.toString())
+          .getDocuments()
+          .then((QuerySnapshot docs) {
+        print(docs.documents);
+        if (docs.documents.isNotEmpty) {
+          setState(() {
+            checkExistingUser = true;
+          });
+        }
+      });
       print("validated");
       if (int.parse(garvida.text.toString()) > 1) {
         if (newDropListPurposeOfVisit.isEmpty ||
@@ -1562,7 +1561,7 @@ class _SocialDemoFormBody extends State<SocialDemoFormBody> {
             placeOfPreviousDelivery.isEmpty) {
           Scaffold.of(context)
               .showSnackBar(SnackBar(content: Text("Some fields are Empty")));
-        }else if(checkExistingUser){
+        } else if (checkExistingUser) {
           Scaffold.of(context)
               .showSnackBar(SnackBar(content: Text("User Already Exists")));
         } else {
@@ -1587,7 +1586,7 @@ class _SocialDemoFormBody extends State<SocialDemoFormBody> {
           map['annual income'] = familyIncome;
           map['age'] = age.text.toString();
           map['marital status'] = maritalStatus;
-          if(maritalStatus!="Single" && maritalStatus !="Live-in"){
+          if (maritalStatus != "Single" && maritalStatus != "Live-in") {
             map['age at marriage'] = ageAtMarriage.text.toString();
           }
           map['expected delivery date'] = expectedDeliveryDate;
@@ -1606,7 +1605,8 @@ class _SocialDemoFormBody extends State<SocialDemoFormBody> {
           map['previous child sex'] = previousChildSex;
           Map userData = Map<String, dynamic>();
           userData['name'] = respondentName.text.toString();
-          userData['searchKeyName'] = respondentName.text.toString().substring(0,1);
+          userData['searchKeyName'] =
+              respondentName.text.toString().substring(0, 1);
           userData['searchKey'] = mobileNumber.text.toString().substring(0, 1);
           userData['age'] = age.text.toString();
           userData['mobile'] = mobileNumber.text.toString();
@@ -1620,12 +1620,11 @@ class _SocialDemoFormBody extends State<SocialDemoFormBody> {
               .setData(map)
               .then((doc) {
             print(docReference.documentID);
-            uid = docReference.documentID;
+            setState(() {
+              uid = docReference.documentID;
+            });
           });
-          Firestore.instance
-              .collection('user')
-              .document(uid)
-              .setData(userData)
+          docReference.setData(userData)
               .whenComplete(() {
             Navigator.pop(context, uid);
           });
@@ -1639,66 +1638,86 @@ class _SocialDemoFormBody extends State<SocialDemoFormBody> {
             familyIncome.isEmpty) {
           Scaffold.of(context)
               .showSnackBar(SnackBar(content: Text("Some fields are Empty")));
-        }else if(checkExistingUser){
-          Scaffold.of(context)
-              .showSnackBar(SnackBar(content: Text("User Already Exists")));
-        }else {
-          Map map = Map<String, dynamic>();
-          map['date'] = DateTime.now();
-          map['purpose for hospital visit'] = newDropListPurposeOfVisit;
-          map['case no'] = caseNo.text.toString();
-          map['research assistant name'] =
-              nameOfResearchAssistant.text.toString();
-          map['consultant name'] = consultantName.text.toString();
-          map['respondent name'] = respondentName.text.toString();
-          map['mobile'] = mobileNumber.text.toString();
-          map['city'] = cityName.text.toString();
-          map['residential locality'] = residentialLocality;
-          map['state'] = stateName.text.toString();
-          map['caste'] = caste;
-          (religion == "Other")
-              ? map['religion'] = otherReligion
-              : map['religion'] = religion;
-          map['social-econmic status'] = socialEconomicStatus;
-          map['no of family members'] = numberOfFamilyMember.text.toString();
-          map['annual income'] = familyIncome;
-          map['age'] = age.text.toString();
-          if(maritalStatus!="Single" && maritalStatus !="Live-in"){
+        } else {
+          if (checkExistingUser) {
+            showAlertDialog();
+          } else {
+            print(checkExistingUser);
+            Map map = Map<String, dynamic>();
+            map['date'] = DateTime.now();
+            map['purpose for hospital visit'] = newDropListPurposeOfVisit;
+            map['case no'] = caseNo.text.toString();
+            map['research assistant name'] =
+                nameOfResearchAssistant.text.toString();
+            map['consultant name'] = consultantName.text.toString();
+            map['respondent name'] = respondentName.text.toString();
+            map['mobile'] = mobileNumber.text.toString();
+            map['city'] = cityName.text.toString();
+            map['residential locality'] = residentialLocality;
+            map['state'] = stateName.text.toString();
+            map['caste'] = caste;
+            (religion == "Other")
+                ? map['religion'] = otherReligion
+                : map['religion'] = religion;
+            map['social-econmic status'] = socialEconomicStatus;
+            map['no of family members'] = numberOfFamilyMember.text.toString();
+            map['annual income'] = familyIncome;
+            map['age'] = age.text.toString();
+            if (maritalStatus != "Single" && maritalStatus != "Live-in") {
+              map['age at marriage'] = ageAtMarriage.text.toString();
+            }
             map['age at marriage'] = ageAtMarriage.text.toString();
+            map['expected delivery date'] = expectedDeliveryDate;
+            map['gestational age'] = currentGestationalAge.text.toString();
+            map['weight'] = motherWeight.text.toString();
+            map['garvida'] = garvida.text.toString();
+            Map userData = Map<String, dynamic>();
+            userData['name'] = respondentName.text.toString();
+            userData['searchKey'] =
+                mobileNumber.text.toString().substring(0, 1);
+            userData['searchKeyName'] =
+                respondentName.text.toString().substring(0, 1);
+            userData['age'] = age.text.toString();
+            userData['mobile'] = mobileNumber.text.toString();
+            userData['epds_count'] = 0;
+            userData['pbq_count'] = 0;
+            final collRef = Firestore.instance.collection('user');
+            DocumentReference docReference = collRef.document();
+            docReference
+                .collection('social demography form')
+                .document('response')
+                .setData(map)
+                .then((doc) {
+              print(docReference.documentID);
+              setState(() {
+                uid = docReference.documentID;
+              });
+            });
+                docReference.setData(userData)
+                .whenComplete(() {
+                  print(uid);
+              Navigator.pop(context, uid);
+            });
           }
-          map['age at marriage'] = ageAtMarriage.text.toString();
-          map['expected delivery date'] = expectedDeliveryDate;
-          map['gestational age'] = currentGestationalAge.text.toString();
-          map['weight'] = motherWeight.text.toString();
-          map['garvida'] = garvida.text.toString();
-          Map userData = Map<String, dynamic>();
-          userData['name'] = respondentName.text.toString();
-          userData['searchKey'] = mobileNumber.text.toString().substring(0, 1);
-          userData['searchKeyName'] = respondentName.text.toString().substring(0,1);
-          userData['age'] = age.text.toString();
-          userData['mobile'] = mobileNumber.text.toString();
-          userData['epds_count'] = 0;
-          userData['pbq_count'] = 0;
-          final collRef = Firestore.instance.collection('user');
-          DocumentReference docReference = collRef.document();
-          docReference
-              .collection('social demography form')
-              .document('response')
-              .setData(map)
-              .then((doc) {
-            print(docReference.documentID);
-            uid = docReference.documentID;
-          });
-          Firestore.instance
-              .collection('user')
-              .document(uid)
-              .setData(userData)
-              .whenComplete(() {
-            Navigator.pop(context, uid);
-          });
         }
       }
     } else
       print("not validated");
+  }
+
+  showAlertDialog() {
+    showDialog(context: context,
+        builder: (BuildContext context){
+          return AlertDialog(
+            title: Text("Alert"),
+            content:Text("User with Mobile Number ${mobileNumber.text.toString()} already exists"),
+            actions: <Widget>[
+              FlatButton(child:Text("Okay"), onPressed: () {
+                print("Pressed Okay, Dismiss Alert Dialog");
+                Navigator.pop(context);
+              },)
+            ],
+          );
+        });
   }
 }

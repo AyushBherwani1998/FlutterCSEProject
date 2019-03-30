@@ -70,7 +70,7 @@ class _ExistingPatientBody extends State<ExisitingPatientBody> {
             padding: const EdgeInsets.all(10.0),
             child: TextField(
               autofocus: true,
-              textCapitalization: TextCapitalization,
+              textCapitalization: TextCapitalization.words,
               controller: forSearch,
               onChanged: (val) {
                 //val=searchOption;
