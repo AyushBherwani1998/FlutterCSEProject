@@ -65,7 +65,8 @@ class _RecentEntryBody extends State<RecentEntryBody> {
                       fontSize: 18.0,
                       fontWeight: FontWeight.w400)),
               //give name of form
-              subtitle: Text("Form: "+recentEntriesList[index]['form'],
+              subtitle: Text("Form: "+recentEntriesList[index]['form']+"\nScore: ${recentEntriesList[index]['score']!=null?recentEntriesList[index]['score'].toString():
+              ""}",
                   style: TextStyle(color: Colors.black54)),
               //add score and date
               trailing: Container(

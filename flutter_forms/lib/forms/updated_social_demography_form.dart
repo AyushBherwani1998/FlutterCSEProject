@@ -993,7 +993,7 @@ class _SocialDemoFormBody extends State<SocialDemoFormBody> {
                       ),
                       validator: (String number){
                         if(number!=""){
-                          if(number.length>1 || int.parse(number)>=int.parse(para.text.toString())) {
+                          if(number.length>1 || int.parse(number)!=int.parse(para.text.toString())) {
                             return "Please Enter a Valid Number";
                           }else
                             return null;
